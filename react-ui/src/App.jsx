@@ -16,6 +16,7 @@ import MailIcon from '@material-ui/icons/Mail';
 
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import CalibrationPage from "./CalibrationPage";
+import HomePage from "./HomePage";
 
 const drawerWidth = 240;
 
@@ -162,7 +163,7 @@ function App() {
 				<main className={classes.content}>
 					<div className={classes.toolbar} />
 					<Switch>
-						<Route exact path='/' component={() => <>Home</>} />
+						<Route exact path='/' component={HomePage} />
 						<Route exact path='/calibration' component={CalibrationPage} />
 					</Switch>
 				</main>
