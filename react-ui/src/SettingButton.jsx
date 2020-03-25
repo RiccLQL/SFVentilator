@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
 
-import { makeStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
+
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import {
     Button, ButtonBase,
     Dialog, DialogActions, DialogContent, DialogTitle,
@@ -16,15 +18,39 @@ import RightIcon from "@material-ui/icons/KeyboardArrowRight";
 
 import { units } from "./Utilities";
 
+const buttonSize = 90;
+const sliderLabelSize = 40;
+
 const useStyles = makeStyles(theme => ({
     root: {
         margin: theme.spacing(1),
     },
-    buttonBase: {
-        width: 130,
-        height: 130,
+    button: {
         backgroundColor: theme.palette.primary.main,
-        borderRadius: "50%",
+        borderRadius: "25%",
+        height: buttonSize,
+        width: buttonSize,
+        "&:hover, &$focusVisible": {
+            zIndex: 1,
+            "& $buttonBackdrop": {
+                opacity: 0,
+            }
+        }
+    },
+    buttonOpen: {
+        border: "6px solid black",
+    },
+    focusVisible: {},
+    buttonBackdrop: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        borderRadius: "25%",
+        backgroundColor: theme.palette.common.black,
+        opacity: 0.2,
+        transition: theme.transitions.create('opacity'),
     },
     primary: {
         color: "white",
@@ -45,8 +71,18 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function SettingButton({ decimalPlaces, description, min, max, setter, setting, unit, value }) {
-    const [open, setOpen] = useState(false);
+const SettingButtonDialogSlider = withStyles({
+    valueLabel: {
+        fontSize: "1.2rem",
+        "& > span": {
+            width: sliderLabelSize,
+            height: sliderLabelSize,
+        },
+    },
+})(Slider);
+
+function SettingButton({ decimalPlaces, description, min, max, setter, setting, unit, value, startOpen }) {
+    const [open, setOpen] = useState(!!startOpen);
     const [localValue, setLocalValue] = useState(value);
     const [localValueString, setLocalValueString] = useState(value.toFixed(decimalPlaces));
 
@@ -81,7 +117,7 @@ function SettingButton({ decimalPlaces, description, min, max, setter, setting, 
                                 {min.toFixed(decimalPlaces)}{unitText}
                             </Grid>
                             <Grid item xs>
-                                <Slider
+                                <SettingButtonDialogSlider
                                     className={classes.slider}
                                     marks
                                     {...{ min, max, step }}
@@ -154,10 +190,12 @@ function SettingButton({ decimalPlaces, description, min, max, setter, setting, 
             </Dialog>
             <div className={classes.root}>
                 <ButtonBase
-                    className={classes.buttonBase}
+                    className={clsx(classes.button, open && classes.buttonOpen)}
                     focusRipple
+                    focusVisibleClassName={classes.focusVisible}
                     onClick={() => setOpen(true)}
                 >
+                    {!open && <span className={classes.buttonBackdrop} />}
                     <div>
                         <Typography
                             className={classes.primary}
