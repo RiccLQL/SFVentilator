@@ -12,7 +12,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import HomeIcon from "@material-ui/icons/Home";
 
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import CalibrationPage from "./CalibrationPage";
@@ -123,7 +123,7 @@ function App() {
 						</IconButton>
 						<Typography variant="h6" noWrap>
 							Cureona RPi UI
-          </Typography>
+          				</Typography>
 					</Toolbar>
 				</AppBar>
 				<Drawer
@@ -148,7 +148,7 @@ function App() {
 					<List>
 						<Link to={'/'} className={classes.link}>
 							<ListItem button>
-								<ListItemIcon><InboxIcon /></ListItemIcon>
+								<ListItemIcon><HomeIcon /></ListItemIcon>
 								<ListItemText primary="Home" />
 							</ListItem>
 						</Link>

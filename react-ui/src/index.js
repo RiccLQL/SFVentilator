@@ -16,14 +16,18 @@ const theme = createMuiTheme({
       main: "#2554c7",
     },
   },
+  typography: {
+    fontFamily: 'Product Sans',
+    fontSize: 16,
+  }
 });
 
 ReactDOM.render(
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    </BrowserRouter>,
+  <BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
+  </BrowserRouter>,
   document.getElementById('root')
 );
 
