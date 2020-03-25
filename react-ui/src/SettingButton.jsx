@@ -33,12 +33,13 @@ const useStyles = makeStyles(theme => ({
         "&:hover, &$focusVisible": {
             zIndex: 1,
             "& $buttonBackdrop": {
-                opacity: 0,
+                opacity: 0.3,
             }
         }
     },
     buttonOpen: {
         border: "6px solid black",
+        backgroundColor: theme.palette.secondary.main,
     },
     focusVisible: {},
     buttonBackdrop: {
@@ -48,8 +49,8 @@ const useStyles = makeStyles(theme => ({
         right: 0,
         bottom: 0,
         borderRadius: "25%",
-        backgroundColor: theme.palette.common.black,
-        opacity: 0.2,
+        backgroundColor: theme.palette.common.white,
+        opacity: 0,
         transition: theme.transitions.create('opacity'),
     },
     primary: {

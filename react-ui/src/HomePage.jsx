@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 
-import Chart from "./Chart";
+import TimeChart from "./TimeChart";
 import SettingButton from "./SettingButton";
 
 const useStyles = makeStyles(theme => ({
@@ -19,7 +19,19 @@ export default function HomePage() {
 
     return (
         <div className={classes.root}>
-            <div style={{ width: 800, height: 600 }}><Chart title="Flow" /></div>
+            <div style={{ width: 800, height: 600 }}>
+                <TimeChart
+                    title="Flow"
+                    data={(() => {
+                        let now = Date.now();
+                        return [65, 59, 35, 81, -25, 55, 40].reduce((acc, next, i) => [...acc, {
+                            datum: next,
+                            timestamp: now + 10 * i
+                        }], []);
+                    })()}
+                    colors={{ 0: 'green', 3: 'red', }}
+                />
+            </div>
             <SettingButton
                 description={<>Fraction of inspired O<sub>2</sub></>}
                 decimalPlaces={0}
