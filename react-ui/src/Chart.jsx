@@ -4,7 +4,7 @@ import { defaults, Line } from "react-chartjs-2";
 
 import { colorToRGBA } from "./Utilities";
 
-export default function TimeChart({ colors, data, title }) {
+export default function Chart({ colors, data, title }) {
     const chartRef = useRef(null);
 
     let processedData = {

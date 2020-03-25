@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 
-import TimeChart from "./TimeChart";
+import Chart from "./Chart";
 import SettingButton from "./SettingButton";
 
 const useStyles = makeStyles(theme => ({
@@ -20,7 +20,7 @@ export default function HomePage() {
     return (
         <div className={classes.root}>
             <div style={{ width: 800, height: 600 }}>
-                <TimeChart
+                <Chart
                     title="Flow"
                     data={(() => {
                         let now = Date.now();
