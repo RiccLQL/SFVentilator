@@ -30,6 +30,7 @@ void loop() {
 void update(){
   
 }
+
 /**
  * Converts pressure in cm of water to mm of mercury
  * @param inputPressure
@@ -38,6 +39,7 @@ void update(){
 double cmH2O_To_mmHg(double inputPressure){
   return inputPressure*0.73555912101486; 
 }
+
 /**
  * Converts pressure in mm of mercury to cm of water 
  * @param inputPressure
@@ -46,6 +48,7 @@ double cmH2O_To_mmHg(double inputPressure){
 double mmHg_To_cmH2O(double inputPressure){
   return inputPressure*1.3595100263596591; 
 }
+
 /**
  * Method to calculate the alveolar oxygen partial pressure 
  * for more information: https://www.sciencedirect.com/topics/medicine-and-dentistry/alveolar-gas-equation
@@ -58,4 +61,57 @@ double mmHg_To_cmH2O(double inputPressure){
  */
 double calculateAlveolarO2Pressure(double baroPressure,double fracConcentrationO2,double partialPressureCO2,double vaporPressureH2O){
   return (fracConcentrationO2*(baroPressure-vaporPressureH2O))-(partialPressureCO2/respQuotient); 
+}
+
+/**
+ * Method to calculate constant M, which is a combination of the desired FiO2, the desired pressure, the temperature of the environment, the gas constant and the molar mass
+ * 
+ * @param n: molar mass (mol/L) or smt
+ * @param T: temperature (Celsius)
+ * @return constant M
+ */
+double M_constant(double n, double T) {
+
+  double ACf;
+  double R;
+  double Pf = 40;
+  double M;
+  
+  M = (ACf*n*R*T)/Pf;
+
+  return M;
+}
+
+/**
+ * Method to calculate the time for which the O2 source is open, letting in pressurized O2
+ * 
+ * @param M: the M constant (no pertinent unit)
+ * @param Vf: the desired volume for inhale (L)
+ * @param Qtank: the flow rate of the O2 valve
+ * @return the time ttank in seconds
+ */
+double O2_Open_Time(double M, double Vf, double Qtank) {
+
+  double ttank;
+
+  ttank = (M-0.21*Vf)/(1.21*Qtank);
+
+  return ttank;
+}
+
+/**
+ * Method to calculate the time for which the air compressor source is open, letting in slightly compressed ambient air
+ * 
+ * @param M: the M constant (no pertinent unit)
+ * @param Vf: the desired volume for inhale (L)
+ * @param Qair: the flow rate of the 15mm air valve
+ * @return the time tair in seconds
+ */
+double Air_Open_Time(double M, double Vf, double Qair) {
+
+  double tair;
+
+  tair = (Vf-M)/(0.79*Qair);
+
+  return tair;
 }
