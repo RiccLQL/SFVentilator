@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-import Chart from "./Chart";
-import SettingButton from "./SettingButton";
+import Chart from "../components/Chart";
+import SettingButton from "../components/SettingButton";
+import Bridge from "../Bridge";
+import { useRefresher } from "../Utilities";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -12,11 +14,14 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function MonitorPage({ flow, mode, setMode }) {
+export default function MonitorPage({ mode, setMode }) {
     const [FIO2, setFIO2] = useState(100);
     const [TI, setTI] = useState(1.70);
 
     const classes = useStyles();
+    const { flow } = Bridge;
+
+    useRefresher(100);
 
     return (
         <div className={classes.root}>
@@ -52,29 +57,11 @@ export default function MonitorPage({ flow, mode, setMode }) {
                         <Grid item xs={6} style={{ height: 250 }}>
                             <Chart
                                 title="Flow"
-                                data={(() => {
-                                    let now = Date.now();
-                                    return [65, 59, 35, 81, -25, 55, 40].reduce((acc, next, i) => [...acc, {
-                                        datum: next,
-                                        timestamp: now + 10 * i
-                                    }], []);
-                                })()}
-                                colors={{ 0: 'green', 3: 'red', }}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            Test
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} style={{ height: 250 }}>
-                            <Chart
-                                title="Flow"
                                 data={flow.map(item => item.datum)}
                                 colors={{ 0: 'green' }}
                                 maxPoints={1000 / flow[flow.length - 1].interval / 5}
+                                suggestedMin={-100}
+                                suggestedMax={100}
                             />
                         </Grid>
                         <Grid item xs={6}>

@@ -2,11 +2,11 @@ import React, { useRef, } from "react";
 
 import { defaults, Line } from "react-chartjs-2";
 
-import { colorToRGBA } from "./Utilities";
+import { colorToRGBA } from "../Utilities";
 
-export default function Chart({ colors, data, title }) {
+export default function Chart({ colors, data, suggestedMin, suggestedMax, title }) {
     const chartRef = useRef(null);
-
+    
     let processedData = {
         labels: data.map(d => d.timestamp),
         datasets: Object.entries(colors).map(([dataIndex, newColor], colorIndex, colorEntries) => (
@@ -58,6 +58,8 @@ export default function Chart({ colors, data, title }) {
             yAxes: [{
                 ticks: {
                     maxTicksLimit: 8,
+                    suggestedMin,
+                    suggestedMax,
                 },
             }],
         },

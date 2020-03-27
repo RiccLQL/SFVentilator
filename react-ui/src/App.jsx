@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import clsx from 'clsx';
-import socketIOClient from "socket.io-client";
 
 import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
 import {
@@ -26,15 +25,16 @@ import ConsoleIcon from "@material-ui/icons/LaptopChromebookRounded";
 
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
-import MonitorPage from "./MonitorPage";
-import CalibrationPage from "./CalibrationPage";
-import SettingsPage from "./SettingsPage";
-import Error404Page from "./Error404Page";
-import ConsolePage from "./ConsolePage";
+import MonitorPage from "./pages/MonitorPage";
+import CalibrationPage from "./pages/CalibrationPage";
+import SettingsPage from "./pages/SettingsPage";
+import Error404Page from "./pages/Error404Page";
+import ConsolePage from "./pages/ConsolePage";
 
 import HelpScreen from "./HelpScreen";
 
-import LogContext from './LogContext';
+import { log } from './Logs';
+import { useBridge } from "./Bridge";
 //import SocketContext from './SocketContext';
 
 const drawerWidth = 240;
@@ -132,25 +132,10 @@ function App() {
 	const [helpOpen, setHelpOpen] = useState(false);
 	const [monitorMode, setMonitorMode] = useState(0);
 
-	const [flow, setFlow] = useState([{
-		datum: { value: Math.sin(Date.now()), timestamp: Date.now() },
-		interval: 50,
-	}]);
+	//const logs = [];
 
-	const logs = [];
 
-	const log = message => logs.unshift({ message, timestamp: Date.now() });
-
-	useEffect(() => {
-		const socket = socketIOClient("http://127.0.0.1:4001");
-		socket.on('connect_error', () => log("Failed to connect to socket.io"));
-		socket.on("connected", () => console.log("Connected"));
-		socket.on("FromAPI", data => console.log(data));
-		socket.on('flow', point => setFlow(flow => {
-			return [...flow.slice(Math.max(0, flow.length - 10)), point];
-		}));
-		// eslint-disable-next-line
-	}, []);
+	const bridge = useBridge(log);
 
 	const handleDrawerOpen = () => setDrawerOpen(true);
 	const handleDrawerClose = () => setDrawerOpen(false);
@@ -252,7 +237,7 @@ function App() {
 					<Switch>
 						{['/', '/monitor'].map(
 							(path, i) => <Route exact path={path} key={i} component={() => <MonitorPage
-								flow={flow}
+								bridge={bridge}
 								mode={monitorMode}
 								setMode={setMonitorMode}
 							/>} />
@@ -261,7 +246,7 @@ function App() {
 							() => <CalibrationPage />
 						} />
 						<Route exact path='/console' component={
-							() => <LogContext.Provider value={logs}><ConsolePage /></LogContext.Provider>
+							() => <ConsolePage />
 						} />
 						<Route exact path='/settings' component={
 							() => <SettingsPage />

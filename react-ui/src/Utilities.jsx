@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export const units = {
     cmH2O: <>&nbsp;cmH<sub>2</sub>O</>,
     mmHg: <>&nbsp;mmHg</>,
     percentage: <>%</>,
     seconds: <>s</>,
+    "degrees Celsius": <>°C</>,
 };
 
 export const choice = arr => arr[Math.floor(Math.random() * arr.length)];
@@ -66,4 +67,12 @@ export const colorToRGBA = (color, a) => {
     if (/^#(?:[A-Fa-f0-9]{3}){1,2}$/gm.test(color))
         return RGBtoRGBA(hexToRGB(color), a);
     return RGBtoRGBA(colorNameToRGB(color), a);
+};
+
+export function useRefresher(interval) {
+    const [, set] = useState(0);
+    useEffect(() => {
+        let intervalID = setInterval(() => set(_ => _ + 1), interval);
+        return () => clearInterval(intervalID);
+    });
 };
