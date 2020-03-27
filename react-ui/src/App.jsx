@@ -23,7 +23,6 @@ import ChartIcon from "@material-ui/icons/InsertChartOutlined";
 import CalibrateIcon from "@material-ui/icons/AddToHomeScreen";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ConsoleIcon from "@material-ui/icons/LaptopChromebookRounded";
-import HelpIcon from "@material-ui/icons/HelpOutline";
 
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
