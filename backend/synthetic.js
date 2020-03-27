@@ -1,5 +1,5 @@
 module.exports = socket => {
-    let interval = 25;
+    let interval = 100;
 
     setInterval(async () => {
         socket.emit("flow", {

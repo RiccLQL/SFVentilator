@@ -18,7 +18,7 @@ import RightIcon from "@material-ui/icons/KeyboardArrowRight";
 
 import { units } from "./Utilities";
 
-const buttonSize = 90;
+const buttonSize = 75;
 const sliderLabelSize = 40;
 
 const useStyles = makeStyles(theme => ({
