@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, } from "react";
 
 import { defaults, Line } from "react-chartjs-2";
 
@@ -23,8 +23,8 @@ export default function Chart({ colors, data, title }) {
                 borderJoinStyle: 'miter',
                 pointBorderColor: colorToRGBA(newColor, 1),
                 pointBackgroundColor: 'black',
-                pointBorderWidth: 5,
-                pointHoverRadius: 5,
+                pointBorderWidth: 8,
+                pointHoverRadius: 8,
                 pointHoverBackgroundColor: colorToRGBA(newColor, 1),
                 pointHoverBorderColor: 'rgba(220,220,220,1)',
                 pointHoverBorderWidth: 2,
@@ -32,7 +32,7 @@ export default function Chart({ colors, data, title }) {
                 pointHitRadius: 10,
                 data: data.map((d, i) =>
                     (i >= dataIndex && (colorIndex >= colorEntries.length - 1 || i <= colorEntries[colorIndex + 1][0]))
-                        ? d.datum
+                        ? d.value
                         : null
                 ),
             }
@@ -41,21 +41,44 @@ export default function Chart({ colors, data, title }) {
 
     const options = {
         defaultFontFamily: defaults.global.defaultFontFamily = "Product Sans",
-        defaultFontSize: defaults.global.defaultFontSize = 24,
+        defaultFontSize: defaults.global.defaultFontSize = 16,
+        legend: {
+            display: false,
+        },
+        maintainAspectRatio: false,
+        responsive: true,
+        responsiveAnimationDuration: 0,
+        animation: {
+            duration: 0
+        },
+        hover: {
+            animationDuration: 0
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    maxTicksLimit: 8,
+                },
+            }],
+        },
         title: {
             display: true,
             text: title
         },
-        responsive: true,
-        legend: {
-            display: false,
-        },
         tooltips: {
             callbacks: {
-                label: item => item.yLabel,
+                label: (item, data) => {
+                    let lastDatasetIndex = -1;
+                    data.datasets.forEach((ds, i) => {
+                        // eslint-disable-next-line
+                        if (ds.data[item.index] == item.value)
+                            lastDatasetIndex = i;
+                    });
+                    return item.datasetIndex === lastDatasetIndex ? item.yLabel : null;
+                },
             },
         },
     };
 
-    return <Line ref={chartRef} options={options} data={processedData} />;
+    return <Line ref={chartRef} data={processedData} options={options} />;
 };

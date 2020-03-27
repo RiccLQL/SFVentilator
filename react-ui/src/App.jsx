@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import clsx from 'clsx';
+import socketIOClient from "socket.io-client";
 
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { AppBar, CssBaseline, Divider, Drawer, IconButton, List, Toolbar, Typography, } from "@material-ui/core";
+import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
+import {
+	AppBar,
+	CssBaseline,
+	Divider, Drawer, IconButton,
+	List, MenuItem, Select,
+	Toolbar, Typography,
+} from "@material-ui/core";
 
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -11,18 +18,32 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import HomeIcon from "@material-ui/icons/Home";
+
+import ChartIcon from "@material-ui/icons/InsertChartOutlined";
+import CalibrateIcon from "@material-ui/icons/AddToHomeScreen";
+import SettingsIcon from "@material-ui/icons/Settings";
+import ConsoleIcon from "@material-ui/icons/LaptopChromebookRounded";
+import HelpIcon from "@material-ui/icons/HelpOutline";
 
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+
+import MonitorPage from "./MonitorPage";
 import CalibrationPage from "./CalibrationPage";
-import HomePage from "./HomePage";
+import SettingsPage from "./SettingsPage";
+import Error404Page from "./Error404Page";
+import ConsolePage from "./ConsolePage";
+
+import HelpScreen from "./HelpScreen";
+
+import LogContext from './LogContext';
+//import SocketContext from './SocketContext';
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
 	root: {
 		display: 'flex',
+		flexGrow: 1,
 	},
 	link: {
 		textDecoration: 'none',
@@ -80,33 +101,70 @@ const useStyles = makeStyles(theme => ({
 		// necessary for content to be below app bar
 		...theme.mixins.toolbar,
 	},
+	title: {
+		flexGrow: 1,
+	},
 	content: {
 		flexGrow: 1,
 		padding: theme.spacing(3),
+	},
+	modeSelectorArea: {
+		position: 'relative',
+		borderRadius: theme.shape.borderRadius,
+		backgroundColor: fade(theme.palette.common.white, 0.9),
+		marginLeft: 0,
+		width: '100%',
+		minWidth: '20rem',
+		[theme.breakpoints.up('sm')]: {
+			marginLeft: theme.spacing(1),
+			width: 'auto',
+		},
+	},
+	modeSelect: {
+		display: 'flex',
+		flexGrow: 1,
 	},
 }));
 
 function App() {
 	const classes = useStyles();
 	const theme = useTheme();
-	const [open, setOpen] = React.useState(false);
+	const [drawerOpen, setDrawerOpen] = useState(false);
+	const [helpOpen, setHelpOpen] = useState(false);
+	const [monitorMode, setMonitorMode] = useState(0);
 
-	const handleDrawerOpen = () => {
-		setOpen(true);
-	};
+	const [flow, setFlow] = useState([{
+		datum: { value: Math.sin(Date.now()), timestamp: Date.now() },
+		interval: 50,
+	}]);
 
-	const handleDrawerClose = () => {
-		setOpen(false);
-	};
+	const logs = [];
+
+	const log = message => logs.unshift({ message, timestamp: Date.now() });
+
+	useEffect(() => {
+		const socket = socketIOClient("http://127.0.0.1:4001");
+		socket.on('connect_error', () => log("Failed to connect to socket.io"));
+		socket.on("connected", () => console.log("Connected"));
+		socket.on("FromAPI", data => console.log(data));
+		socket.on('flow', point => setFlow(flow => {
+			return [...flow.slice(Math.max(0, flow.length - 10)), point];
+		}));
+		// eslint-disable-next-line
+	}, []);
+
+	const handleDrawerOpen = () => setDrawerOpen(true);
+	const handleDrawerClose = () => setDrawerOpen(false);
 
 	return (
 		<Router>
 			<div className={classes.root}>
+				<HelpScreen {...{ helpOpen, setHelpOpen }} />
 				<CssBaseline />
 				<AppBar
 					position="fixed"
 					className={clsx(classes.appBar, {
-						[classes.appBarShift]: open,
+						[classes.appBarShift]: drawerOpen,
 					})}
 				>
 					<Toolbar>
@@ -116,26 +174,42 @@ function App() {
 							onClick={handleDrawerOpen}
 							edge="start"
 							className={clsx(classes.menuButton, {
-								[classes.hide]: open,
+								[classes.hide]: drawerOpen,
 							})}
 						>
 							<MenuIcon />
 						</IconButton>
-						<Typography variant="h6" noWrap>
+						<Typography className={classes.title} variant="h4" noWrap>
 							Cureona RPi UI
           				</Typography>
+						<Switch>
+							{['/', '/monitor'].map((path, i) => <Route key={i} exact path={path} component={() => <>
+								<Typography variant="h6">Mode:&nbsp;</Typography>
+								<div className={classes.modeSelectorArea}>
+									<Select
+										className={classes.modeSelect}
+										onChange={event => setMonitorMode(event.target.value)}
+										value={monitorMode}
+										variant="outlined"
+									>
+										<MenuItem value={0}>Test1</MenuItem>
+										<MenuItem value={1}>Test2</MenuItem>
+									</Select>
+								</div>
+							</>} />)}
+						</Switch>
 					</Toolbar>
 				</AppBar>
 				<Drawer
 					variant="permanent"
 					className={clsx(classes.drawer, {
-						[classes.drawerOpen]: open,
-						[classes.drawerClose]: !open,
+						[classes.drawerOpen]: drawerOpen,
+						[classes.drawerClose]: !drawerOpen,
 					})}
 					classes={{
 						paper: clsx({
-							[classes.drawerOpen]: open,
-							[classes.drawerClose]: !open,
+							[classes.drawerOpen]: drawerOpen,
+							[classes.drawerClose]: !drawerOpen,
 						}),
 					}}
 				>
@@ -144,18 +218,32 @@ function App() {
 							{theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
 						</IconButton>
 					</div>
-					<Divider />
 					<List>
-						<Link to={'/'} className={classes.link}>
+						<Link to={'/monitor'} className={classes.link}>
 							<ListItem button>
-								<ListItemIcon><HomeIcon /></ListItemIcon>
-								<ListItemText primary="Home" />
+								<ListItemIcon><ChartIcon /></ListItemIcon>
+								<ListItemText primary="Monitor" />
 							</ListItem>
 						</Link>
+						<Divider />
 						<Link to={'/calibration'} className={classes.link}>
 							<ListItem button>
-								<ListItemIcon><InboxIcon /></ListItemIcon>
+								<ListItemIcon><CalibrateIcon /></ListItemIcon>
 								<ListItemText primary="Calibration" />
+							</ListItem>
+						</Link>
+						<Divider />
+						<Link to={'/settings'} className={classes.link}>
+							<ListItem button>
+								<ListItemIcon><SettingsIcon /></ListItemIcon>
+								<ListItemText primary="Settings" />
+							</ListItem>
+						</Link>
+						<Divider />
+						<Link to={'/console'} className={classes.link}>
+							<ListItem button>
+								<ListItemIcon><ConsoleIcon /></ListItemIcon>
+								<ListItemText primary="Debug console" />
 							</ListItem>
 						</Link>
 					</List>
@@ -163,11 +251,26 @@ function App() {
 				<main className={classes.content}>
 					<div className={classes.toolbar} />
 					<Switch>
-						<Route exact path='/' component={HomePage} />
-						<Route exact path='/calibration' component={CalibrationPage} />
+						{['/', '/monitor'].map(
+							(path, i) => <Route exact path={path} key={i} component={() => <MonitorPage
+								flow={flow}
+								mode={monitorMode}
+								setMode={setMonitorMode}
+							/>} />
+						)}
+						<Route exact path='/calibration' component={
+							() => <CalibrationPage />
+						} />
+						<Route exact path='/console' component={
+							() => <LogContext.Provider value={logs}><ConsolePage /></LogContext.Provider>
+						} />
+						<Route exact path='/settings' component={
+							() => <SettingsPage />
+						} />
+						<Route component={Error404Page} />
 					</Switch>
 				</main>
-			</div >
+			</div>
 		</Router>
 	);
 }

@@ -38,8 +38,7 @@ const useStyles = makeStyles(theme => ({
         }
     },
     buttonOpen: {
-        border: "6px solid black",
-        backgroundColor: theme.palette.secondary.main,
+        backgroundColor: "lightgrey",
     },
     focusVisible: {},
     buttonBackdrop: {
