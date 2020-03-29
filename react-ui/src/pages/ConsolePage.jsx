@@ -5,7 +5,7 @@ import {
     Typography,
 } from "@material-ui/core";
 
-import { logs } from '../Logs';
+import { logs } from '../Logging';
 import { useRefresher } from "../Utilities";
 
 export default function ConsolePage() {

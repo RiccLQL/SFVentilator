@@ -7,11 +7,11 @@ import {
 
 export default function HelpScreen({ helpOpen, setHelpOpen }) {
     return (
-        <Dialog open={helpOpen}>
+        <Dialog open={helpOpen} onClose={() => setHelpOpen(false)}>
             <DialogTitle>Welcome!</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    In case you've 
+                    In case you've
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

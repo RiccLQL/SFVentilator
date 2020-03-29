@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
-import { Box, Divider, List, ListItem, TextField, Typography } from "@material-ui/core";
+import { Divider, List, ListItem, Typography } from "@material-ui/core";
 
 import SettingTextField from "../components/SettingTextField";
 

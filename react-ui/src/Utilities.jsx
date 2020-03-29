@@ -21,7 +21,7 @@ export const hexToRGB = hex => {
         return 'rgb(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ')';
     }
     throw new Error('Bad Hex');
-}
+};
 
 export const colorNameToHex = color => {
     let colors = {
@@ -69,10 +69,24 @@ export const colorToRGBA = (color, a) => {
     return RGBtoRGBA(colorNameToRGB(color), a);
 };
 
-export function useRefresher(interval) {
-    const [, set] = useState(0);
+export function useInterval(action, interval) {
     useEffect(() => {
-        let intervalID = setInterval(() => set(_ => _ + 1), interval);
+        let intervalID = setInterval(action, interval);
         return () => clearInterval(intervalID);
     });
+};
+
+export function useRefresher(interval) {
+    const [, set] = useState(0);
+    useInterval(() => set(_ => _ + 1), interval);
+};
+
+export function capitalize(s) {
+    if (typeof s !== 'string')
+        return '';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+export function sortInPlace(arr, sorter) {
+    return arr.concat().sort(sorter);
 };

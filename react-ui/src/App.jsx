@@ -22,6 +22,7 @@ import ChartIcon from "@material-ui/icons/InsertChartOutlined";
 import CalibrateIcon from "@material-ui/icons/AddToHomeScreen";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ConsoleIcon from "@material-ui/icons/LaptopChromebookRounded";
+import HelpIcon from "@material-ui/icons/HelpOutlined";
 
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
@@ -31,11 +32,12 @@ import SettingsPage from "./pages/SettingsPage";
 import Error404Page from "./pages/Error404Page";
 import ConsolePage from "./pages/ConsolePage";
 
+import Alarm from "./components/Alarm";
+
 import HelpScreen from "./HelpScreen";
 
-import { log } from './Logs';
+import { log } from './Logging';
 import { useBridge } from "./Bridge";
-//import SocketContext from './SocketContext';
 
 const drawerWidth = 240;
 
@@ -100,7 +102,8 @@ const useStyles = makeStyles(theme => ({
 		// necessary for content to be below app bar
 		...theme.mixins.toolbar,
 	},
-	title: {
+	left: {
+		display: 'flex',
 		flexGrow: 1,
 	},
 	content: {
@@ -123,6 +126,9 @@ const useStyles = makeStyles(theme => ({
 		display: 'flex',
 		flexGrow: 1,
 	},
+	helpIcon: {
+		marginLeft: theme.spacing(1),
+	},
 }));
 
 function App() {
@@ -131,20 +137,24 @@ function App() {
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const [helpOpen, setHelpOpen] = useState(false);
 	const [monitorMode, setMonitorMode] = useState(0);
-
-	//const logs = [];
-
+	const [alarm, setAlarm] = useState({
+		children: <>This value is too high!</>,
+		description: 'FiO2 is too high!',
+		open: false,
+		severity: 'error',
+	});
 
 	const bridge = useBridge(log);
-
-	const handleDrawerOpen = () => setDrawerOpen(true);
-	const handleDrawerClose = () => setDrawerOpen(false);
 
 	return (
 		<Router>
 			<div className={classes.root}>
 				<HelpScreen {...{ helpOpen, setHelpOpen }} />
 				<CssBaseline />
+				<Alarm
+					setOpen={next => setAlarm(alarm => ({ ...alarm, open: next }))}
+					{...alarm}
+				/>
 				<AppBar
 					position="fixed"
 					className={clsx(classes.appBar, {
@@ -155,7 +165,7 @@ function App() {
 						<IconButton
 							color="inherit"
 							aria-label="open drawer"
-							onClick={handleDrawerOpen}
+							onClick={() => setDrawerOpen(true)}
 							edge="start"
 							className={clsx(classes.menuButton, {
 								[classes.hide]: drawerOpen,
@@ -163,12 +173,19 @@ function App() {
 						>
 							<MenuIcon />
 						</IconButton>
-						<Typography className={classes.title} variant="h4" noWrap>
-							Cureona RPi UI
-          				</Typography>
+						<div className={classes.left}>
+							<Typography className={classes.title} variant="h4" noWrap>
+								Cureona RPi UI
+          					</Typography>
+							<IconButton
+								className={classes.helpIcon}
+								color="inherit"
+								onClick={() => setHelpOpen(true)}
+							><HelpIcon /></IconButton>
+						</div>
 						<Switch>
 							{['/', '/monitor'].map((path, i) => <Route key={i} exact path={path} component={() => <>
-								<Typography variant="h6">Mode:&nbsp;</Typography>
+								<Typography variant="h6">Breathing mode:&nbsp;</Typography>
 								<div className={classes.modeSelectorArea}>
 									<Select
 										className={classes.modeSelect}
@@ -176,8 +193,7 @@ function App() {
 										value={monitorMode}
 										variant="outlined"
 									>
-										<MenuItem value={0}>Test1</MenuItem>
-										<MenuItem value={1}>Test2</MenuItem>
+										<MenuItem value={0}>Patient-triggered respiration</MenuItem>
 									</Select>
 								</div>
 							</>} />)}
@@ -198,7 +214,7 @@ function App() {
 					}}
 				>
 					<div className={classes.toolbar}>
-						<IconButton onClick={handleDrawerClose}>
+						<IconButton onClick={() => setDrawerOpen(false)}>
 							{theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
 						</IconButton>
 					</div>

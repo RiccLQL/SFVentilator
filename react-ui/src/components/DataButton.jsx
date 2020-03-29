@@ -61,8 +61,8 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function SettingButton(props) {
-    const { decimalPlaces, setting, unit, value, startOpen } = props;
+function DataButton(props) {
+    const { decimalPlaces, setting, setter, unit, value, startOpen } = props;
 
     const [open, setOpen] = useState(!!startOpen);
 
@@ -72,13 +72,13 @@ function SettingButton(props) {
 
     return (
         <>
-            <SettingDialog {...{ ...props, open, setOpen }} />
+            {!!setter && <SettingDialog {...{ ...props, open, setOpen }} />}
             <div className={classes.root}>
                 <ButtonBase
                     className={clsx(classes.button, open && classes.buttonOpen)}
                     focusRipple
                     focusVisibleClassName={classes.focusVisible}
-                    onClick={() => setOpen(true)}
+                    onClick={() => setOpen(!!setter && true)}
                 >
                     {!open && <span className={classes.buttonBackdrop} />}
                     <div>
@@ -103,8 +103,8 @@ function SettingButton(props) {
     );
 }
 
-SettingButton.propTypes = {
+DataButton.propTypes = {
     unit: PropTypes.oneOf(Object.keys(units)),
 };
 
-export default SettingButton;
+export default DataButton;

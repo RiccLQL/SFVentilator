@@ -75,7 +75,7 @@ function SettingDialog({ open, setOpen, decimalPlaces, description, min, max, se
 
     const unitText = units[unit];
     const round = num => Math.round(num * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
-    const step = round((max - min) / 40);
+    const step = round((max - min) / 10);
 
     return (
         <>
