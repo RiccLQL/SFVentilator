@@ -1,10 +1,10 @@
+const data = require('./data');
+
 module.exports = socket => {
-    let interval = 1000;
+    let interval = 100;
 
     setInterval(async () => {
-        socket.emit("flow", {
-            datum: { value: Math.sin(Date.now() / 1000) * 100, timestamp: Date.now() },
-            interval,
-        });
+        data.arduinoReceiver('Flow|' + (Math.sin(Date.now() / 1000) * 100), socket);
+        data.arduinoReceiver('RoomTemp|' + (Math.random() * 5 + 20), socket);
     }, interval);
 };

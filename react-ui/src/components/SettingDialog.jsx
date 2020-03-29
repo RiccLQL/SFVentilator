@@ -13,7 +13,7 @@ import {
 import LeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import RightIcon from "@material-ui/icons/KeyboardArrowRight";
 
-import { units } from "../Utilities";
+import { units, usePrevious } from "../Utilities";
 
 const sliderLabelSize = 40;
 
@@ -62,7 +62,13 @@ const SettingDialogSlider = withStyles({
     },
 })(Slider);
 
-function SettingDialog({ open, setOpen, decimalPlaces, description, min, max, setter, setting, unit, value }) {
+function SettingDialog({ open, setOpen, decimalPlaces, description, min, max, setter, setting, step, unit, value }) {
+    const prevOpen = usePrevious(open);
+    useEffect(() => {
+        if (open && !prevOpen)
+            setLocalValue(value);
+    }, [open, prevOpen, value]);
+
     const [localValue, setLocalValue] = useState(value);
     const [localValueString, setLocalValueString] = useState(value.toFixed(decimalPlaces));
 
@@ -75,7 +81,7 @@ function SettingDialog({ open, setOpen, decimalPlaces, description, min, max, se
 
     const unitText = units[unit];
     const round = num => Math.round(num * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
-    const step = round((max - min) / 10);
+    step = step || round((max - min) / 10);
 
     return (
         <>
@@ -99,8 +105,7 @@ function SettingDialog({ open, setOpen, decimalPlaces, description, min, max, se
                             <Grid item xs>
                                 <SettingDialogSlider
                                     className={classes.slider}
-                                    marks
-                                    {...{ min, max, step }}
+                                    {...{ min, max, step, }}
                                     onChange={(_, newValue) => setLocalValue(parseFloat(newValue))}
                                     value={localValue}
                                     valueLabelDisplay="on"

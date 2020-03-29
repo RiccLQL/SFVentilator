@@ -9,8 +9,6 @@ import { ButtonBase, Typography, } from "@material-ui/core";
 import SettingDialog from "./SettingDialog";
 import { units } from "../Utilities";
 
-const buttonSize = 75;
-
 const useStyles = makeStyles(theme => ({
     root: {
         margin: theme.spacing(0, 1),
@@ -18,8 +16,8 @@ const useStyles = makeStyles(theme => ({
     button: {
         backgroundColor: theme.palette.primary.main,
         borderRadius: "25%",
-        height: buttonSize,
-        width: buttonSize,
+        height: 75,
+        width: 145,
         "&:hover, &$focusVisible": {
             zIndex: 1,
             "& $buttonBackdrop": {

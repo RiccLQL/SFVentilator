@@ -3,15 +3,21 @@ import { useEffect } from "react";
 import socketIOClient from "socket.io-client";
 
 import { log } from './Logging';
-import { useInterval, sortInPlace } from './Utilities';
+import { sortInPlace } from './Utilities';
 
 export function makePointAdder(maxPointCount, name) {
     return point => Bridge[name] = sortInPlace([...Bridge[name].slice(Math.max(0, Bridge[name].length - maxPointCount)), point]);
 };
 
-export const flow = [{
-    datum: { value: 0, timestamp: Date.now() },
-    interval: 50,
+export function makeSetter(name, socket) {
+    return value => {
+        Bridge[name] = value;
+        socket.emit(name, value);
+    };
+};
+
+export const Flow = [{
+    value: 0, timestamp: Date.now(),
 }];
 
 export function useBridge() {
@@ -21,16 +27,18 @@ export function useBridge() {
         socket.on('connect', () => log("Connected to socket.io"));
         socket.on('disconnect', () => { log("Socket.io disconnected"); });
 
-        socket.on('flow', makePointAdder(10, "flow"));
-    }, []);
+        socket.on('RoomTemp', value => Bridge.RoomTemp = value);
+        socket.on('Flow', makePointAdder(10, "Flow"));
 
-    useInterval(() => Bridge.roomTemp = Math.random() * 10, 500);
+        Bridge.setDesFiO2 = makeSetter("DesFiO2", socket);
+    }, []);
 };
 
 export const Bridge = {
-    flow,
+    DesFiO2: 21,
+    Flow,
     makePointAdder,
-    roomTemp: 0,
+    RoomTemp: 20,
     useBridge,
 };
 

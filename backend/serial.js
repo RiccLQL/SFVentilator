@@ -1,7 +1,7 @@
 const SerialPort = require('serialport');
 const Readline = require('@serialport/parser-readline');
 
-require('./data');
+const data = require('./data');
 
 async function getArduinoPort() {
     const ports = await SerialPort.list();
@@ -15,21 +15,28 @@ async function getArduinoPort() {
 }
 
 async function setupArduino(socket) {
-    const portName = await getArduinoPort();
+    /* const portName = await getArduinoPort();
     const port = new SerialPort(portName, { baudRate: 115200 });
     const parser = port.pipe(new Readline({ delimeter: '\n' }));
 
-    port.on('open', () => console.log('[ARD] Connected to Arduino via serial port'));
+    const sendToArduino = (name, value) => port.write(`${name}|${value}\n`);
+
+    port.on('open', () => {
+        console.log('[ARD] Connected to Arduino via serial port');
+        globals.tStart = Date.now();
+    });
     port.on('close', () => console.log('[ARD] Disconnected from Arduino'));
     port.on('error', error => {
         console.log(error);
         console.log('[ARD] Error thrown from Arduino serial port');
     });
 
-    parser.on('data', data => {
-        console.log('[ARD] Received data from Arduino: ' + data)
-        let [name, value] = data.split('|');
-    });
+    parser.on('data', data.dataHandler); */
+
+    const sendToArduino = (name, value) => console.log(`[ARD] Sending ${name}|${value}`);
+
+    data.arduinoReceiver('RoomTemp|29', socket);
+    data.reactReceiver(socket, sendToArduino);
 }
 
 module.exports = setupArduino;

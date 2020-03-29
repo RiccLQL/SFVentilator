@@ -10,7 +10,7 @@ Every update/communication will take its own line - one update; one line.
 void setup()
 {
     // ...
-    Serial.begin(9600);
+    Serial.begin(115200);
     // ...
 }
 
@@ -30,7 +30,7 @@ void setup()
  *        // Remember that newValue is a char[] i.e. if you want a number value you have to convert it
  *        // To do this, #include <stdlib.h> at the top and just run strtod(newValue, NULL)
  *    }
- *    //...
+ *    //... 
  * }
  */
 
