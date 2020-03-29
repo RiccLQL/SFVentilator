@@ -1,6 +1,6 @@
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
-#include "DHT.h"
+
 
 #define DHTPIN 6
 #define DHTTYPE DHT11
