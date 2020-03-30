@@ -1,24 +1,14 @@
 #include <Servo.h>
 #include <LiquidCrystal.h>
 #include <Wire.h>
+#include <Adafruit_BMP280.h>
+#include <Adafruit_BME280.h>
+#include <Adafruit_Sensor.h>
 
+//------------------------------------entities--------------------------------------------
 
 //set up LCD (with pins) 
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);//values from test.ino 
-//Servos for valves and air compressor motor
-Servo oxygen_Tank_Valve_Servo; //oxygen tank motor to release O2
-Servo pressure_tank_Servo; //motor to open close valve 
-Servo air_Compressor_Valve_Servo; 
-
-//Pin numbers for Sensors (can choose to hardcode pins) 
-
-
-//constants for calculations 
-const double respQuotient=0.8; //ranges from 0.7 to 1.0 , typically 0.8, depends on metabolism and diet https://www.sciencedirect.com/topics/medicine-and-dentistry/respiratory-quotient, to be modified by User in UI
-
-//constants depending on location/quality of O2 tank 
-const double fractionO2TankFilled=1.0; //100% of the Oxygen tank filled, to be modified by User in UI
-const double fractionO2Air=0.18; //18% of air in hospital , to be modified by User in UI
+LiquidCrystal lcd(8,9,10,11,12,13);
 
 //servo variables
 Servo Regulator;
@@ -37,8 +27,18 @@ int potpinO2Open = 1023;
 int O2val;
 int O2angle;
 
+//O2 sensor [CURRENTLY MISSING]
+
+//pressure chamber sensor
+Adafruit_BME280 PCsensor;
+
+//exhale sensor
+Adafruit_BMP280 Esensor;
+
+//------------------------------------variables----------------------------------------------
+
 //regulator variables
-int maxRegAngle = 59;
+int maxRegAngle = 107;   //subject to change on the rotation capacity of regulator
 int inhale = 0;
 int closed = 511;
 int exhale = 1023;
@@ -47,18 +47,22 @@ int exhale = 1023;
 int maxACAngle = 179; //subject to change on the rotation of needle valve
 int maxO2Angle = 179;
 
-//sensor addresses
-BME280_a;
-BME280_b;
-BME280_c;
-O2sensor;
 
-#define BME280_a_pressure_1 
-//...
 
 //settings-variables (SUBJECT TO CHANGE BASED ON RPi)
-int Pdesiredexhale = 40;
+double Pdesiredexhale = 40.0;
+double Pdesiredinhale = 20.0;
 
+
+//other variables
+double Pexhale;
+double Pinhale;
+double Tmin;
+double Tmax;
+double FiO2f = 21;
+double FiO2margin = 0.5;    //for now
+
+//----------------------------------setup(): starting entities-------------------------------------------
 
 void setup() {
 
@@ -67,10 +71,18 @@ void setup() {
   O2.attach(39);
 
   Serial.begin(115200);
+  
+  //commence sensor BME280 at pressure chamber
+  if (!PCsensor.begin(0x76)) {
+    Serial.println("Could not find a valid Pressure Chamber sensor, check wiring!");
+    //control mechanical error
+  }
 
-
-  Wire.begin();
-  Wire.beginTransmission(BME
+  //commence sensor BME280 at regulator cave
+  if (!Esensor.begin(0x77)) {
+    Serial.println("Could not find a valid Exhale sensor, check wiring!");
+    //control mechanical error
+  }
 
   //start regulator at closed
   {
@@ -98,6 +110,8 @@ void setup() {
     O2.write(O2angle);
   }
 
+//-------------------------------------------settings input---------------------------------------
+
   //await settings and variable configuration
   {
     
@@ -113,7 +127,7 @@ void setup() {
     digitalWrite(49, HIGH); //open the motor
   }
 
-  
+//--------------------------------------------starting the breathing----------------------------------
   
   //first exhale
   {
@@ -122,40 +136,131 @@ void setup() {
     Regulator.write(Rangle);
   }
 
-  boolean a = true;
-  while (a) {
+  Pexhale = hPaToCmH2O(Esensor.readPressure());
+  while (Pexhale <= Pdesiredexhale) {
     //test for the pressure, stop when it reaches the desired exhale
-  }  
+    mixture();
+    Pexhale = hPaToCmH2O(Esensor.readPressure());
+  } 
 }
 
+//----------------------------------loop()------------------------------------------------------------
+
 void loop() {
+
+  double Temperature = PCsensor.readTemperature();
+  double Humidity = PCsensor.readHumidity();
+
+  Tmin = 0.9*Temperature;
+  Tmax = 1.1*Temperature;
+
+  //temp and humidity to be checked every breath
+  if (Temperature > Tmin && Temperature < Tmax) {
+    
+  }
+  else {
+    
+  }
+  
+  //after exhale
   {
     Rval = closed;
     Rangle = map(Rval, 0, 1023, 0, maxRegAngle);
     Regulator.write(Rangle);
   }
 
-  delay(1);
-
+  //inhale
   {
     Rval = inhale;
     Rangle = map(Rval, 0, 1023, 0, maxRegAngle);
     Regulator.write(Rangle);
   }
 
-  boolean i = true;
-  while(a) {
-    //test for the pressure, stop when it reaches the desired exhale
+  Pinhale = hPaToCmH2O(Esensor.readPressure());
+  while (Pinhale >= Pdesiredinhale) {
+
+    Pinhale = hPaToCmH2O(Esensor.readPressure());
   }
 
+  //after inhale
   {
     Rval = closed;
     Rangle = map(Rval, 0, 1023, 0, maxRegAngle);
     Regulator.write(Rangle);
   }
 
-  delay(1);
+  //exhale
+  {
+    Rval = exhale;
+    Rangle = map(Rval, 0, 1023, 0, maxRegAngle);
+    Regulator.write(Rangle);
+  }
 
+  Pexhale = hPaToCmH2O(Esensor.readPressure());
+  while (Pexhale <= Pdesiredexhale) {
+    //test for the pressure, stop when it reaches the desired exhale
+    mixture();
+    Pexhale = hPaToCmH2O(Esensor.readPressure());
+  }  
+
+}
+
+
+double O2LevelSim;
+
+void mixture() {
+  double Pchamber = hPaToCmH2O(PCsensor.readPressure());
+  if (Pchamber <= (1.1)*Pdesiredexhale) {
+
+    //simulate the FiO2 value
+    O2LevelSim = 21;
+    if (O2LevelSim >= FiO2f - FiO2margin) {
+      ACval = potpinACOpen;
+      ACangle = map(ACval, 0, 1023, 0, maxACAngle);
+      AirCompressor.write(ACangle);
   
+      O2val = potpinO2Closed;
+      O2angle = map(O2val, 0, 1023, 0, maxO2Angle);
+      O2.write(O2angle);
+    }
+
+    if (O2LevelSim < FiO2f -FiO2margin) {
+      ACval = potpinACOpen;
+      ACangle = map(ACval, 0, 1023, 0, maxACAngle);
+      AirCompressor.write(ACangle);
   
+      O2val = potpinO2Open;
+      O2angle = map(O2val, 0, 1023, 0, maxO2Angle);
+      O2.write(O2angle);
+    }
+  }
+
+  if (Pchamber > (1.1)*Pdesiredexhale) {
+
+    O2LevelSim = 21;
+    if (O2LevelSim >= FiO2f - FiO2margin) {
+      ACval = potpinACClosed;
+      ACangle = map(ACval, 0, 1023, 0, maxACAngle);
+      AirCompressor.write(ACangle);
+
+      O2val = potpinO2Closed;
+      O2angle = map(O2val, 0, 1023, 0, maxO2Angle);
+      O2.write(O2angle);
+    }
+
+    if (O2LevelSim < FiO2f -FiO2margin) {
+      ACval = potpinACClosed;
+      ACangle = map(ACval, 0, 1023, 0, maxACAngle);
+      AirCompressor.write(ACangle);
+
+      O2val = potpinO2Open;
+      O2angle = map(O2val, 0, 1023, 0, maxO2Angle);
+      O2.write(O2angle);
+    }
+  }
+}
+
+double hPaToCmH2O(double phpa) {
+  double pcmh2o = 1.0197442889221*phpa;
+  return pcmh2o;
 }
