@@ -5,8 +5,6 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'typeface-roboto';
 
-import { isDev } from "./Utilities";
-
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 
@@ -15,12 +13,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { themeData } from './Config';
 
 const theme = createMuiTheme(themeData);
-
-if (!isDev()) {
-	document.addEventListener('fullscreenerror', event => console.log(event));
-	if (document.fullscreenEnabled)
-		document.documentElement.requestFullscreen();
-}
 
 ReactDOM.render(
 	<BrowserRouter>

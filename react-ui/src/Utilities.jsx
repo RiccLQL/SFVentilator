@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import process from "process";
-
 export const units = {
     cmH2O: <>&nbsp;cmH<sub>2</sub>O</>,
     mmHg: <>&nbsp;mmHg</>,
@@ -91,10 +89,6 @@ export function capitalize(s) {
 
 export function sortInPlace(arr, sorter) {
     return arr.concat().sort(sorter);
-};
-
-export function isDev() {
-    return !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 };
 
 export function usePrevious(value) {
