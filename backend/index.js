@@ -38,5 +38,5 @@ io.on('connection', socket => {
 
 server.listen(port, () => {
     console.log(`[HTTP] Listening on port ${port}`);
-    open('http://localhost:5000/');
+    open(`http://localhost:${port}/`);
 });
