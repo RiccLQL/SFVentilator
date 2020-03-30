@@ -89,7 +89,7 @@ function SettingDialog({ open, setOpen, decimalPlaces, description, min, max, se
                 {...{ open }}
                 className={classes.dialog}
                 fullWidth
-                maxWidth="md"
+                maxWidth="xl"
             >
                 <DialogTitle>{setting} - {description} ({unit})</DialogTitle>
                 <DialogContent dividers>

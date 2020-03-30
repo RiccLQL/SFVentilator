@@ -19,7 +19,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import ChartIcon from "@material-ui/icons/InsertChartOutlined";
-import CalibrateIcon from "@material-ui/icons/AddToHomeScreen";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ConsoleIcon from "@material-ui/icons/LaptopChromebookRounded";
 import HelpIcon from "@material-ui/icons/HelpOutlined";
@@ -27,14 +26,13 @@ import HelpIcon from "@material-ui/icons/HelpOutlined";
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 import MonitorPage from "./pages/MonitorPage";
-import CalibrationPage from "./pages/CalibrationPage";
-import SettingsPage from "./pages/SettingsPage";
+import GeneralSettingsPage from "./pages/GeneralSettingsPage";
 import Error404Page from "./pages/Error404Page";
 import ConsolePage from "./pages/ConsolePage";
 
 import Alarm from "./components/Alarm";
 
-import HelpScreen from "./HelpScreen";
+import HelpScreen from "./help/HelpScreen";
 
 import { log } from './Logging';
 import { useBridge } from "./Bridge";
@@ -135,7 +133,7 @@ function App() {
 	const classes = useStyles();
 	const theme = useTheme();
 	const [drawerOpen, setDrawerOpen] = useState(false);
-	const [helpOpen, setHelpOpen] = useState(false);
+	const [helpOpen, setHelpOpen] = useState(true);
 	const [monitorMode, setMonitorMode] = useState(0);
 	const [alarm, setAlarm] = useState({
 		children: <>This value is too high!</>,
@@ -226,17 +224,10 @@ function App() {
 							</ListItem>
 						</Link>
 						<Divider />
-						<Link to={'/calibration'} className={classes.link}>
-							<ListItem button>
-								<ListItemIcon><CalibrateIcon /></ListItemIcon>
-								<ListItemText primary="Calibration" />
-							</ListItem>
-						</Link>
-						<Divider />
 						<Link to={'/settings'} className={classes.link}>
 							<ListItem button>
 								<ListItemIcon><SettingsIcon /></ListItemIcon>
-								<ListItemText primary="Settings" />
+								<ListItemText primary="General settings" />
 							</ListItem>
 						</Link>
 						<Divider />
@@ -258,14 +249,11 @@ function App() {
 								setMode={setMonitorMode}
 							/>} />
 						)}
-						<Route exact path='/calibration' component={
-							() => <CalibrationPage />
-						} />
 						<Route exact path='/console' component={
 							() => <ConsolePage />
 						} />
 						<Route exact path='/settings' component={
-							() => <SettingsPage />
+							() => <GeneralSettingsPage />
 						} />
 						<Route component={Error404Page} />
 					</Switch>

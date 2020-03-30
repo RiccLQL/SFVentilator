@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-export default function SettingsPage() {
+export default function GeneralSettingsPage() {
     const [tempMin, setTempMin] = useState(20);
     const [tempMax, setTempMax] = useState(30);
     const [humidityMin, setHumidityMin] = useState(20);

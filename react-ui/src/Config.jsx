@@ -8,7 +8,7 @@ export const themeData = {
 		},
 	},
 	typography: {
-		fontFamily: 'Product Sans',
+		fontFamily: 'Roboto',
 		fontSize: 16,
 	}
 };
