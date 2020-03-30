@@ -9,7 +9,7 @@ import { units } from "../Utilities";
 function SettingTextField(props) {
     const [open, setOpen] = useState(false);
 
-    const { decimalPlaces, setting, unit, value } = props
+    const { decimalPlaces, setting, unit, value, width } = props
     const unitText = units[unit];
 
     return (
@@ -19,7 +19,7 @@ function SettingTextField(props) {
                 label={<>{setting} ({unitText})</>}
                 margin="dense"
                 onClick={() => setOpen(true)}
-                style={{ width: 100 }}
+                style={{ width: width || 100 }}
                 value={value.toFixed(decimalPlaces)}
                 variant="outlined"
             />

@@ -9,6 +9,6 @@ export const themeData = {
 	},
 	typography: {
 		fontFamily: 'Roboto',
-		fontSize: 16,
+		fontSize: 15,
 	}
 };

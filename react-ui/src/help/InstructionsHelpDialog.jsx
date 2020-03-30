@@ -32,10 +32,13 @@ const useStyles = makeStyles(theme => ({
     ol: {
         margin: theme.spacing(1, 0),
     },
+    content: {
+        maxHeight: 1000,
+    }
 }));
 
 export default function InstructionsHelpDialog({ open, onClose }) {
-    const [activeStep, setActiveStep] = useState(0);
+    const [activeStep, setActiveStep] = useState(7 - 1);
 
     const classes = useStyles();
 
@@ -47,7 +50,7 @@ export default function InstructionsHelpDialog({ open, onClose }) {
                 <HelpIcon className={classes.icon} />
                 Instructions
             </DialogTitle>
-            <DialogContent>
+            <DialogContent className={classes.content}>
                 <Stepper alternativeLabel className={classes.stepper} nonLinear activeStep={activeStep} orientation="horizontal">
                     {stepContent.map((_, index) => (
                         <Step key={index}>

@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const csv = require('./csv');
 
 const unsureMessage = (name, value) => console.log(`[ARD] Unsure how to process data with name "${name}" and value ${value}`);
@@ -30,7 +32,7 @@ async function mutateCollect(name, value, direction, extra) {
         unsureMessage(name, value);
 }
 
-const noCollect = ["RoomTemp"];
+const noCollect = ['Pmax', 'Pmin', "RoomTemp", 'RR', 'VT',];
 const collect = ["FiO2", "LungPress"];
 
 let tempStorage = {};
@@ -58,31 +60,60 @@ async function setUpPipe(socket) {
                 unsureMessage(name, value);
         });
         tempStorage = {};
-    }, 100);
+    }, 200);
 }
 
 async function reactReceiver(socket, sendToArduino) {
-    ['DesFiO2'].forEach(
-        name => socket.on(name, value =>
-            mutateNoCollect(name, parseFloat(value), "toArduino", sendToArduino)
-        )
+    // NON-PERSISTENT/PATIENT-SPECIFIC SETTINGS
+    ['DesFiO2', 'GoodLungTemp', 'RR', 'Pmax', 'Pmin'].forEach(
+        name => socket.on(name, value => {
+            console.log(`[REACT] Received ${name}|${value}`);
+            mutateNoCollect(name, parseFloat(value), "toArduino", sendToArduino);
+        })
     );
+
+    // PERSISTENT/GENERAL SETTINGS
+    let savedConfig = JSON.parse(fs.readFileSync('./config.json'));
+    ['HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum', 'MinTemp',].forEach(name => {
+        mutateNoCollect(name, parseFloat(savedConfig[name]), "toReact", socket);
+
+        socket.on(name, value => {
+            console.log(`[REACT] Received ${name}|${value}`);
+            mutateNoCollect(name, parseFloat(value), "toArduino", sendToArduino);
+
+            fs.readFile('./config.json', (_, data) => {
+                let currentConfig = JSON.parse(data);
+                currentConfig[name] = parseFloat(value);
+                fs.writeFile('./config.json', JSON.stringify(currentConfig), () => { });
+            });
+        });
+    });
 }
+
+const makeCollectableValue = () => [{
+    value: 0,
+    timestamp: Date.now(),
+}];
 
 const data = {
     arduinoReceiver,
     DesFiO2: 21,
-    FiO2: [{
-        value: 0,
-        timestamp: Date.now()
-    }],
-    LungPress: [{
-        value: 0,
-        timestamp: Date.now()
-    }],
+    FiO2: makeCollectableValue(),
+    GoodLungTemp: 37,
+    HumMargBadTemp: 0,
+    HumMargGoodTemp: 0,
+    MaxHum: 0,
+    MaxTemp: 0,
+    MinHum: 0,
+    MinTemp: 0,
+    LungPress: makeCollectableValue(),
+    Pmax: 0,
+    Pmin: 0,
     reactReceiver,
-    RoomTemp: 20,
+    RoomTemp: 0,
+    RR: 0,
     setUpPipe,
+    VT: 0,
 };
 
 module.exports = data;

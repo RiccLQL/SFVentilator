@@ -11,6 +11,7 @@ import {
 	Toolbar, Typography,
 } from "@material-ui/core";
 
+import StatusIndicator from "./components/StatusIndicator";
 import DateTimeIndicator from "./components/DateTimeIndicator";
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -32,7 +33,7 @@ import MonitorPage from "./pages/MonitorPage";
 import GeneralSettingsPage from "./pages/GeneralSettingsPage";
 import Error404Page from "./pages/Error404Page";
 import DebugConsolePage from "./pages/DebugConsolePage";
-import PatientPage from './pages/PatientPage';
+import PatientSettingsPage from './pages/PatientSettingsPage';
 
 import Alarm from "./components/Alarm";
 
@@ -168,6 +169,7 @@ function App() {
 								onClick={() => setHelpOpen(true)}
 							><HelpIcon /></IconButton>
 						</div>
+						<StatusIndicator />
 						<DateTimeIndicator />
 					</Toolbar>
 				</AppBar>
@@ -200,7 +202,7 @@ function App() {
 						<Link to={'/patient'} className={classes.link}>
 							<ListItem button>
 								<ListItemIcon><PersonIcon /></ListItemIcon>
-								<ListItemText primary="Patient-specific settings" />
+								<ListItemText primary="Patient settings" />
 							</ListItem>
 						</Link>
 						<Divider />
@@ -228,7 +230,7 @@ function App() {
 							/>} />
 						)}
 						<Route exact path='/patient' component={
-							() => <PatientPage />
+							() => <PatientSettingsPage />
 						} />
 						<Route exact path='/console' component={
 							() => <DebugConsolePage />

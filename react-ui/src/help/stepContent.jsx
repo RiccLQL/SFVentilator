@@ -1,14 +1,24 @@
 import React from 'react';
 
+import { Typography } from '@material-ui/core';
+
 import ChartIcon from "@material-ui/icons/InsertChartOutlined";
 import HelpIcon from "@material-ui/icons/HelpOutlined";
 import PersonIcon from "@material-ui/icons/Person";
 import SettingsIcon from "@material-ui/icons/Settings";
 
+import MonitorPageTabs from './MonitorPageTabs';
 import manualVentilation from './manualVentilation.jpg';
 import wallSocket from './wallSocket.png';
 
 export const getStepContent = classes => [
+    ['Using this Instructions dialog', <>
+        This dialog will teach you how to use the ventilator's user interface.
+        Note that you can follow the steps in order by using the
+        &nbsp;<Typography variant="button" component="span">Back</Typography>&nbsp;
+        and &nbsp;<Typography variant="button" component="span">Next</Typography>&nbsp;
+        buttons,  or skip between steps by clicking on numbers.
+    </>],
     ['Install ventilator', <>
         ??
     </>],
@@ -41,16 +51,7 @@ export const getStepContent = classes => [
     </>],
     ['Main monitor page', <>
         On the <ChartIcon className={classes.inlineIcon} /> Monitor page, you can do several things.
-        <ol className={classes.ol}>
-            <li>Desired FiO<sub>2</sub> level</li>
-            <li>Pressure</li>
-            <li>Charts - see instruction page #7 for more details;</li>
-            <li>Humidity bar - ??</li>
-            <li>Temperature level - ??</li>
-        </ol>
-    </>],
-    ['Main monitor page, continued', <>
-        These are the charts you can see on the <ChartIcon className={classes.inlineIcon} /> Monitor page.
+        <MonitorPageTabs />
     </>],
     [<>O<sub>2</sub> level and pressure</>, <>
         To manually control oxygen level and pressure, use the buttons near the LCD screen.

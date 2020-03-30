@@ -1,27 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 
-import { makeStyles } from "@material-ui/core/styles";
 import { Divider, List, ListItem, Typography } from "@material-ui/core";
 
 import SettingTextField from "../components/SettingTextField";
-
-const useStyles = makeStyles(theme => ({
-
-}));
+import Bridge from "../Bridge";
+import { useRefresher } from "../Utilities";
 
 export default function GeneralSettingsPage() {
-    const [tempMin, setTempMin] = useState(20);
-    const [tempMax, setTempMax] = useState(30);
-    const [humidityMin, setHumidityMin] = useState(20);
-    const [humidityMax, setHumidityMax] = useState(30);
-    const [humidityRangeTempWithin, setHumidityRangeTempWithin] = useState(0);
-    const [humidityRangeTempNotWithin, setHumidityRangeTempNotWithin] = useState(0);
+    const { HumMargBadTemp, HumMargGoodTemp, MaxHum, MaxTemp, MinHum, MinTemp,
+        setHumMargBadTemp, setHumMargGoodTemp, setMaxHum, setMaxTemp, setMinHum, setMinTemp, } = Bridge;
 
-    const classes = useStyles();
+    useRefresher(100);
 
     return (
-        <div className={classes.root}>
-            <Typography variant="h5">Settings</Typography>
+        <div>
+            <Typography variant="h5">General Settings</Typography>
             <Typography variant="subtitle1">Changes will be automatically saved.</Typography>
             <Divider />
             <List dense>
@@ -33,10 +26,10 @@ export default function GeneralSettingsPage() {
                         description="Minimum acceptable temperature"
                         min={20}
                         max={40}
-                        setter={setTempMin}
+                        setter={setMinTemp}
                         setting="Min"
                         unit="degrees Celsius"
-                        value={tempMin}
+                        value={MinTemp}
                     />
                     &nbsp;-&nbsp;
                     <SettingTextField
@@ -44,10 +37,10 @@ export default function GeneralSettingsPage() {
                         description="Maximum acceptable temperature"
                         min={20}
                         max={40}
-                        setter={setTempMax}
+                        setter={setMaxTemp}
                         setting="Max"
                         unit="degrees Celsius"
-                        value={tempMax}
+                        value={MaxTemp}
                     />
                 </ListItem>
                 <Divider />
@@ -60,10 +53,10 @@ export default function GeneralSettingsPage() {
                         description="Minimum acceptable humidity"
                         min={20}
                         max={40}
-                        setter={setHumidityMin}
+                        setter={setMinHum}
                         setting="Min"
                         unit="percentage"
-                        value={humidityMin}
+                        value={MinHum}
                     />
                     &nbsp;-&nbsp;
                     <SettingTextField
@@ -71,10 +64,10 @@ export default function GeneralSettingsPage() {
                         description="Maximum acceptable humidity"
                         min={20}
                         max={40}
-                        setter={setHumidityMax}
+                        setter={setMaxHum}
                         setting="Max"
                         unit="percentage"
-                        value={humidityMax}
+                        value={MaxHum}
                     />
                 </ListItem>
                 <ListItem>
@@ -87,10 +80,10 @@ export default function GeneralSettingsPage() {
                         description="Warn me if the humidity is out of this range"
                         min={20}
                         max={40}
-                        setter={setHumidityRangeTempWithin}
+                        setter={setHumMargGoodTemp}
                         setting="Range"
                         unit="percentage"
-                        value={humidityRangeTempWithin}
+                        value={HumMargGoodTemp}
                     />
                 </ListItem>
                 <ListItem>
@@ -103,10 +96,10 @@ export default function GeneralSettingsPage() {
                         description="Warn me if the humidity is out of this range"
                         min={20}
                         max={40}
-                        setter={setHumidityRangeTempNotWithin}
+                        setter={setHumMargBadTemp}
                         setting="Range"
                         unit="percentage"
-                        value={humidityRangeTempNotWithin}
+                        value={HumMargBadTemp}
                     />
                 </ListItem>
             </List>

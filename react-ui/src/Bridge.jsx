@@ -11,41 +11,63 @@ export function makePointAdder(maxPointCount, name) {
 
 export function makeSetter(name, socket) {
     return value => {
+        Bridge.status = `Status: Updating setting ${name}...`;
         Bridge[name] = value;
+        log(`Setting ${name} to ${value}`);
         socket.emit(name, value);
+        Bridge.status = `Status: Connected.`;
     };
 };
 
-export const FiO2 = [{
-    value: 0, timestamp: Date.now(),
-}];
-
-export const LungPress = [{
-    value: 0, timestamp: Date.now(),
+const makeCollectableValue = () => [{
+    value: 0,
+    timestamp: Date.now(),
 }];
 
 export function useBridge() {
     useEffect(() => {
         const socket = socketIOClient("http://127.0.0.1:4001");
         socket.on('connect_error', () => log("Failed to connect to socket.io"));
-        socket.on('connect', () => log("Connected to socket.io"));
-        socket.on('disconnect', () => { log("Socket.io disconnected"); });
+        socket.on('connect', () => {
+            log("Connected to socket.io");
+            Bridge.status = `Status: Connected.`;
+        });
+        socket.on('disconnect', () => {
+            log("Socket.io disconnected");
+            Bridge.status = `Status: Connecting...`;
+        });
 
-        socket.on('RoomTemp', value => Bridge.RoomTemp = value);
+        // nonCollect backend -> React
+        ['HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum',
+            'MinTemp', 'Pmax', 'Pmin', 'RoomTemp', 'RR', 'VT',].forEach(name => socket.on(name, value => Bridge[name] = value));
 
-        socket.on('FiO2', makePointAdder(200, "FiO2"));
-        socket.on('LungPress', makePointAdder(200, "LungPress"));
+        // collect backend -> React
+        ['FiO2', 'LungPress',].forEach(name => socket.on(name, makePointAdder(200, name)));
 
-        Bridge.setDesFiO2 = makeSetter("DesFiO2", socket);
+        // nonCollect React -> backend
+        ['DesFiO2', 'GoodLungTemp', 'HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum',
+            'MinTemp', 'RR', 'Pmax', 'Pmin'].forEach(name => Bridge['set' + name] = makeSetter(name, socket));
     }, []);
 };
 
 export const Bridge = {
     DesFiO2: 21,
-    FiO2,
-    LungPress,
+    FiO2: makeCollectableValue(),
+    GoodLungTemp: 37,
+    HumMargBadTemp: 0,
+    HumMargGoodTemp: 0,
+    MaxHum: 30,
+    MaxTemp: 30,
+    MinHum: 30,
+    MinTemp: 30,
+    LungPress: makeCollectableValue(),
     makePointAdder,
-    RoomTemp: 20,
+    Pmax: 0,
+    Pmin: 0,
+    RoomTemp: 0,
+    RR: 0,
+    status: "Status: Connecting...",
+    VT: 0,
     useBridge,
 };
 

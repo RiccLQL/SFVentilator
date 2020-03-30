@@ -16,8 +16,8 @@ const useStyles = makeStyles(theme => ({
     button: {
         backgroundColor: theme.palette.primary.main,
         borderRadius: "25%",
-        height: 90,
-        width: 155,
+        height: 95,
+        width: 175,
         "&:hover, &$focusVisible": {
             zIndex: 1,
             "& $buttonBackdrop": {

@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 
 export const units = {
-    cmH2O: <>&nbsp;cmH<sub>2</sub>O</>,
+    cmH2O: <>cmH<sub>2</sub>O</>,
     mmHg: <>&nbsp;mmHg</>,
     percentage: <>%</>,
     seconds: <>s</>,
     "degrees Celsius": <>°C</>,
+    mL: <>mL</>,
+    "breaths/minute": <>&nbsp;min<sup>-1</sup></>
 };
 
 export const choice = arr => arr[Math.floor(Math.random() * arr.length)];
