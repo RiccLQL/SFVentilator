@@ -1,5 +1,6 @@
 const express = require('express');
 const http = require('http');
+const open = require('open');
 const path = require('path');
 const socketIo = require('socket.io');
 
@@ -35,4 +36,7 @@ io.on('connection', socket => {
     require('./serial')(socket);
 });
 
-server.listen(port, () => console.log(`[HTTP] Listening on port ${port}`));
+server.listen(port, () => {
+    console.log(`[HTTP] Listening on port ${port}`);
+    open('http://localhost:5000/');
+});
