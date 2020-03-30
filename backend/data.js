@@ -73,7 +73,7 @@ async function reactReceiver(socket, sendToArduino) {
     );
 
     // PERSISTENT/GENERAL SETTINGS
-    let savedConfig = JSON.parse(fs.readFileSync('./config.json'));
+    let savedConfig = JSON.parse(fs.readFileSync('/home/pi/SFVentilator/backend/config.json'));
     ['HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum', 'MinTemp',].forEach(name => {
         mutateNoCollect(name, parseFloat(savedConfig[name]), "toReact", socket);
 
