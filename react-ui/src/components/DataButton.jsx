@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
     button: {
         backgroundColor: theme.palette.primary.main,
         borderRadius: "25%",
-        height: 75,
+        height: 90,
         width: 155,
         "&:hover, &$focusVisible": {
             zIndex: 1,
@@ -90,7 +90,7 @@ function DataButton(props) {
                         <Typography
                             className={classes.primary}
                             component="div"
-                            variant="h5"
+                            variant="h4"
                         >
                             {value.toFixed(decimalPlaces)}{unitText}
                         </Typography>

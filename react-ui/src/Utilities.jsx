@@ -98,3 +98,12 @@ export function usePrevious(value) {
     });
     return ref.current;
 };
+
+export function tsToHMS(ts) {
+    let d = new Date(ts);
+    let hours = d.getHours() < 10 ? '0' + d.getHours() : d.getHours();
+    let minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
+    let seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds();
+
+    return `${hours}:${minutes}:${seconds}`;
+};

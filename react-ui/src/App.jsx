@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 
 import clsx from 'clsx';
 
-import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
 	AppBar,
 	CssBaseline,
 	Divider, Drawer, IconButton,
-	List, MenuItem, Select,
+	List,
 	Toolbar, Typography,
 } from "@material-ui/core";
+
+import DateTimeIndicator from "./components/DateTimeIndicator";
 
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -22,13 +24,15 @@ import ChartIcon from "@material-ui/icons/InsertChartOutlined";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ConsoleIcon from "@material-ui/icons/LaptopChromebookRounded";
 import HelpIcon from "@material-ui/icons/HelpOutlined";
+import PersonIcon from "@material-ui/icons/Person";
 
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link, } from 'react-router-dom';
 
 import MonitorPage from "./pages/MonitorPage";
 import GeneralSettingsPage from "./pages/GeneralSettingsPage";
 import Error404Page from "./pages/Error404Page";
-import ConsolePage from "./pages/ConsolePage";
+import DebugConsolePage from "./pages/DebugConsolePage";
+import PatientPage from './pages/PatientPage';
 
 import Alarm from "./components/Alarm";
 
@@ -108,22 +112,6 @@ const useStyles = makeStyles(theme => ({
 		flexGrow: 1,
 		padding: theme.spacing(3),
 	},
-	modeSelectorArea: {
-		position: 'relative',
-		borderRadius: theme.shape.borderRadius,
-		backgroundColor: fade(theme.palette.common.white, 0.9),
-		marginLeft: 0,
-		width: '100%',
-		minWidth: '20rem',
-		[theme.breakpoints.up('sm')]: {
-			marginLeft: theme.spacing(1),
-			width: 'auto',
-		},
-	},
-	modeSelect: {
-		display: 'flex',
-		flexGrow: 1,
-	},
 	helpIcon: {
 		marginLeft: theme.spacing(1),
 	},
@@ -133,8 +121,7 @@ function App() {
 	const classes = useStyles();
 	const theme = useTheme();
 	const [drawerOpen, setDrawerOpen] = useState(false);
-	const [helpOpen, setHelpOpen] = useState(true);
-	const [monitorMode, setMonitorMode] = useState(0);
+	const [helpOpen, setHelpOpen] = useState(false);
 	const [alarm, setAlarm] = useState({
 		children: <>This value is too high!</>,
 		description: 'FiO2 is too high!',
@@ -181,21 +168,7 @@ function App() {
 								onClick={() => setHelpOpen(true)}
 							><HelpIcon /></IconButton>
 						</div>
-						<Switch>
-							{['/', '/monitor'].map((path, i) => <Route key={i} exact path={path} component={() => <>
-								<Typography variant="h6">Breathing mode:&nbsp;</Typography>
-								<div className={classes.modeSelectorArea}>
-									<Select
-										className={classes.modeSelect}
-										onChange={event => setMonitorMode(event.target.value)}
-										value={monitorMode}
-										variant="outlined"
-									>
-										<MenuItem value={0}>Patient-triggered respiration</MenuItem>
-									</Select>
-								</div>
-							</>} />)}
-						</Switch>
+						<DateTimeIndicator />
 					</Toolbar>
 				</AppBar>
 				<Drawer
@@ -217,17 +190,24 @@ function App() {
 						</IconButton>
 					</div>
 					<List>
-						<Link to={'/monitor'} className={classes.link}>
-							<ListItem button>
-								<ListItemIcon><ChartIcon /></ListItemIcon>
-								<ListItemText primary="Monitor" />
-							</ListItem>
-						</Link>
-						<Divider />
 						<Link to={'/settings'} className={classes.link}>
 							<ListItem button>
 								<ListItemIcon><SettingsIcon /></ListItemIcon>
 								<ListItemText primary="General settings" />
+							</ListItem>
+						</Link>
+						<Divider />
+						<Link to={'/patient'} className={classes.link}>
+							<ListItem button>
+								<ListItemIcon><PersonIcon /></ListItemIcon>
+								<ListItemText primary="Patient-specific settings" />
+							</ListItem>
+						</Link>
+						<Divider />
+						<Link to={'/monitor'} className={classes.link}>
+							<ListItem button>
+								<ListItemIcon><ChartIcon /></ListItemIcon>
+								<ListItemText primary="Monitor" />
 							</ListItem>
 						</Link>
 						<Divider />
@@ -245,12 +225,13 @@ function App() {
 						{['/', '/monitor'].map(
 							(path, i) => <Route exact path={path} key={i} component={() => <MonitorPage
 								bridge={bridge}
-								mode={monitorMode}
-								setMode={setMonitorMode}
 							/>} />
 						)}
+						<Route exact path='/patient' component={
+							() => <PatientPage />
+						} />
 						<Route exact path='/console' component={
-							() => <ConsolePage />
+							() => <DebugConsolePage />
 						} />
 						<Route exact path='/settings' component={
 							() => <GeneralSettingsPage />

@@ -7,7 +7,6 @@ import Chart from "../components/Chart";
 import DataButton from "../components/DataButton";
 import Bridge from "../Bridge";
 import { useRefresher } from "../Utilities";
-import { themeData } from '../Config';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -15,9 +14,9 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function MonitorPage({ mode, setMode }) {
+export default function MonitorPage() {
     const classes = useStyles();
-    const { setDesFiO2, DesFiO2, Flow, RoomTemp } = Bridge;
+    const { setDesFiO2, DesFiO2, FiO2, LungPress, RoomTemp } = Bridge;
 
     useRefresher(100);
 
@@ -48,18 +47,25 @@ export default function MonitorPage({ mode, setMode }) {
                 </Grid>
                 <Grid item xs={12}>
                     <Grid container spacing={2}>
-                        <Grid item xs={6} style={{ height: 250 }}>
+                        <Grid item xs={10} style={{ height: 250 }}>
                             <Chart
-                                title="Flow"
-                                data={Flow}
-                                colors={{ 0: themeData.palette.secondary.main }}
-                                maxPoints={20}
-                                suggestedMin={-100}
-                                suggestedMax={100}
+                                title="Lung pressure over time"
+                                data={LungPress}
+                                maxPoints={10000}
+                                suggestedMin={-100} suggestedMax={100}
                             />
                         </Grid>
-                        <Grid item xs={6}>
-                            Test
+                    </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={10} style={{ height: 250 }}>
+                            <Chart
+                                title="FiO2"
+                                data={FiO2}
+                                maxPoints={10000}
+                                suggestedMin={-100} suggestedMax={100}
+                            />
                         </Grid>
                     </Grid>
                 </Grid>

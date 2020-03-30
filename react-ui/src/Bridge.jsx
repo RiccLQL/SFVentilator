@@ -16,7 +16,11 @@ export function makeSetter(name, socket) {
     };
 };
 
-export const Flow = [{
+export const FiO2 = [{
+    value: 0, timestamp: Date.now(),
+}];
+
+export const LungPress = [{
     value: 0, timestamp: Date.now(),
 }];
 
@@ -28,7 +32,9 @@ export function useBridge() {
         socket.on('disconnect', () => { log("Socket.io disconnected"); });
 
         socket.on('RoomTemp', value => Bridge.RoomTemp = value);
-        socket.on('Flow', makePointAdder(10, "Flow"));
+
+        socket.on('FiO2', makePointAdder(200, "FiO2"));
+        socket.on('LungPress', makePointAdder(200, "LungPress"));
 
         Bridge.setDesFiO2 = makeSetter("DesFiO2", socket);
     }, []);
@@ -36,7 +42,8 @@ export function useBridge() {
 
 export const Bridge = {
     DesFiO2: 21,
-    Flow,
+    FiO2,
+    LungPress,
     makePointAdder,
     RoomTemp: 20,
     useBridge,

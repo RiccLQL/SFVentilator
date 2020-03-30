@@ -24,6 +24,7 @@ async function setupArduino(socket) {
     port.on('open', () => {
         console.log('[ARD] Connected to Arduino via serial port');
         globals.tStart = Date.now();
+        data.setUpPipe(socket);
     });
     port.on('close', () => console.log('[ARD] Disconnected from Arduino'));
     port.on('error', error => {
@@ -31,11 +32,13 @@ async function setupArduino(socket) {
         console.log('[ARD] Error thrown from Arduino serial port');
     });
 
-    parser.on('data', data.dataHandler); */
+    parser.on('data', data.arduinoReceiver); */
 
+    global.tStart = Date.now();
     const sendToArduino = (name, value) => console.log(`[ARD] Sending ${name}|${value}`);
 
-    data.arduinoReceiver('RoomTemp|29', socket);
+    data.setUpPipe(socket);
+    data.arduinoReceiver('RoomTemp|29');
     data.reactReceiver(socket, sendToArduino);
 }
 

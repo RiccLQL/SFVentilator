@@ -2,13 +2,16 @@ import React, { useRef, } from "react";
 
 import { defaults, Line } from "react-chartjs-2";
 
-import { colorToRGBA } from "../Utilities";
+import { colorToRGBA, tsToHMS } from "../Utilities";
+import { themeData } from "../Config";
 
 export default function Chart({ colors, data, suggestedMin, suggestedMax, title }) {
     const chartRef = useRef(null);
-    
+
+    colors = colors || { 0: themeData.palette.secondary.main };
+
     let processedData = {
-        labels: data.map(d => d.timestamp),
+        labels: data.map(d => d.timestamp).map(tsToHMS),
         datasets: Object.entries(colors).map(([dataIndex, newColor], colorIndex, colorEntries) => (
             {
                 type: 'line',
@@ -39,9 +42,10 @@ export default function Chart({ colors, data, suggestedMin, suggestedMax, title 
         )),
     };
 
+    let labelTracker = 0;
     const options = {
         defaultFontFamily: defaults.global.defaultFontFamily = "Product Sans",
-        defaultFontSize: defaults.global.defaultFontSize = 16,
+        defaultFontSize: defaults.global.defaultFontSize = 20,
         legend: {
             display: false,
         },
@@ -60,6 +64,16 @@ export default function Chart({ colors, data, suggestedMin, suggestedMax, title 
                     maxTicksLimit: 8,
                     suggestedMin,
                     suggestedMax,
+                },
+            }],
+            xAxes: [{
+                afterTickToLabelConversion: function (data) {
+                    var xLabels = data.ticks;
+                    xLabels.forEach((_, i) => {
+                        if ((i + labelTracker) % 5 !== 1)
+                            xLabels[i] = '';
+                    });
+                    labelTracker++;
                 },
             }],
         },

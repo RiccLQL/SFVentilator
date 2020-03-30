@@ -1,6 +1,6 @@
 const csv = require('./csv');
 
-const unsureMessage = () => console.log(`[ARD] Unsure how to process data with name "${name}" and value ${value}`);
+const unsureMessage = (name, value) => console.log(`[ARD] Unsure how to process data with name "${name}" and value ${value}`);
 
 const nexts = {
     toArduino: (n, v, sendToArduino) => sendToArduino(n, v),
@@ -15,7 +15,7 @@ async function mutateNoCollect(name, value, direction, extra) {
             nexts[direction](name, value, extra);
         } catch (e) { console.log(e); }
     } else
-        unsureMessage();
+        unsureMessage(name, value);
 }
 
 async function mutateCollect(name, value, direction, extra) {
@@ -27,23 +27,38 @@ async function mutateCollect(name, value, direction, extra) {
         csv.addToCsv(name, value, timestamp, direction);
         nexts[direction](name, nextDatum, extra);
     } else
-        unsureMessage();
+        unsureMessage(name, value);
 }
 
-async function arduinoReceiver(data, socket) {
-    //console.log('[ARD] Received data from Arduino: ' + data);
+const noCollect = ["RoomTemp"];
+const collect = ["FiO2", "LungPress"];
+
+let tempStorage = {};
+async function arduinoReceiver(data) {
     let [name, value] = data.split('|');
 
-    switch (name) {
-        case "RoomTemp":
-            mutateNoCollect(name, parseFloat(value), "toReact", socket);
-            break;
-        case "Flow":
-            mutateCollect(name, parseFloat(value), "toReact", socket);
-            break;
-        default:
-            unsureMessage();
-    }
+    if (noCollect.includes(name))
+        tempStorage[name] = parseFloat(value);
+    else if (collect.includes(name)) {
+        if (!tempStorage.hasOwnProperty(name))
+            tempStorage[name] = [];
+        tempStorage[name] = [...tempStorage[name], parseFloat(value)];
+    } else
+        unsureMessage(name, value);
+}
+
+async function setUpPipe(socket) {
+    setInterval(() => {
+        Object.entries(tempStorage).forEach(([name, value]) => {
+            if (noCollect.includes(name))
+                mutateNoCollect(name, value, 'toReact', socket);
+            else if (collect.includes(name))
+                mutateCollect(name, value.reduce((acc, next) => next / value.length + acc, 0), 'toReact', socket);
+            else
+                unsureMessage(name, value);
+        });
+        tempStorage = {};
+    }, 100);
 }
 
 async function reactReceiver(socket, sendToArduino) {
@@ -56,14 +71,18 @@ async function reactReceiver(socket, sendToArduino) {
 
 const data = {
     arduinoReceiver,
-    Flow: [{
+    DesFiO2: 21,
+    FiO2: [{
         value: 0,
         timestamp: Date.now()
     }],
-    DesFiO2: 21,
+    LungPress: [{
+        value: 0,
+        timestamp: Date.now()
+    }],
     reactReceiver,
     RoomTemp: 20,
-    tStart: '',
+    setUpPipe,
 };
 
 module.exports = data;

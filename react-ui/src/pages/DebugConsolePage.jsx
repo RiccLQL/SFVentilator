@@ -8,13 +8,14 @@ import {
 import { logs } from '../Logging';
 import { useRefresher } from "../Utilities";
 
-export default function ConsolePage() {
+export default function DebugConsolePage() {
     useRefresher(200);
 
     return (
         <div>
-            <Typography variant="h6">Log</Typography>
-            <List>
+            <Typography variant="h6">Debug Console</Typography>
+            <Typography variant="subtitle1">Don't modify any settings here unless you know what you're doing.</Typography>
+            <List dense>
                 <Divider />
                 {logs.map((message, i, arr) =>
                     <Fragment key={i}>

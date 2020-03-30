@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function InstructionsHelpDialog({ open, onClose }) {
-    const [activeStep, setActiveStep] = useState(11 - 1);
+    const [activeStep, setActiveStep] = useState(0);
 
     const classes = useStyles();
 

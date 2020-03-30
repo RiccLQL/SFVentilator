@@ -17,9 +17,6 @@ const csvLines = [];
 const addToCsv = (name, value, timestamp, direction) => csvLines.push([timestamp, name, value, direction]);
 
 const setupCsv = () => {
-    //DEBUGGING
-    global.tStart = Date.now();
-
     process.on('SIGINT', () => {
         console.log('Received SIGINT; flushing to CSV file');
 
@@ -32,6 +29,8 @@ const setupCsv = () => {
         ];
 
         fs.writeFileSync("./data/" + formatDate(new Date(global.tStart)) + '.csv', fileLines.join('\n'));
+
+        process.exit(0);
     });
 }
 
