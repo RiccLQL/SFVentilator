@@ -38,5 +38,5 @@ io.on('connection', socket => {
 
 server.listen(port, () => {
     console.log(`[HTTP] Listening on port ${port}`);
-    childProcess.exec(`chromium-browser --start-fullscreen --app=http://localhost:${port}/`);
+    childProcess.exec(`chromium-browser --start-fullscreen --kiosk --app=http://localhost:${port}/`);
 });
