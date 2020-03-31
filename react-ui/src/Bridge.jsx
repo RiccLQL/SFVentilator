@@ -3,7 +3,8 @@ import { useEffect } from "react";
 import socketIOClient from "socket.io-client";
 
 import { log } from './Logging';
-import { range, sortInPlace } from './Utilities';
+import { sortInPlace } from './Utilities';
+import alarms from './alarms';
 
 export function makePointAdder(maxPointCount, name) {
     return point => Bridge[name] = sortInPlace([...Bridge[name].slice(Math.max(0, Bridge[name].length - maxPointCount)), point]);
@@ -39,11 +40,32 @@ export function useBridge() {
         });
 
         // nonCollect backend -> React
-        ['HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum',
+        ['Hum', 'HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum',
             'MinTemp', 'Pexhale', 'Pinhale', 'RoomTemp', 'RR', 'VT',].forEach(name => socket.on(name, value => Bridge[name] = value));
 
         // collect backend -> React
         ['FiO2', 'LungPress',].forEach(name => socket.on(name, makePointAdder(200, name)));
+
+        // alarm backend -> React
+        ['BattLowWarn', 'HumAlarm', 'HumWarn', 'PexWarn', 'PinWarn', 'O2inLowAlarm', 'ValveBlockedAlarm'].forEach(name =>
+            socket.on(name, data => {
+                let alarmDialogData = alarms[name].dialogData;
+                let next = !!data;
+
+                if (next && !Bridge[name])
+                    Bridge.alarmDialog = {
+                        ...alarmDialogData,
+                        open: true,
+                        setOpen: open => Bridge.alarmDialog.open = open,
+                    };
+                else if (!next && Bridge[name]
+                    && alarmDialogData.description === Bridge.alarmDialog.description
+                    && alarmDialogData.severity === Bridge.alarmDialog.severity)
+                    Bridge.alarmDialog.open = false;
+
+                Bridge[name] = next;
+            })
+        );
 
         // nonCollect React -> backend
         ['DesFiO2', 'GoodLungTemp', 'HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum',
@@ -52,10 +74,15 @@ export function useBridge() {
 };
 
 export const Bridge = {
-    alarms: range(8).map(n => `Alarm ${n}`),
+    alarmDialog: { open: false },
+    alarms,
+    BattLowWarn: false,
     DesFiO2: 21,
     FiO2: makeCollectableValue(),
     GoodLungTemp: 37,
+    Hum: 0,
+    HumAlarm: false,
+    HumWarn: false,
     HumMargBadTemp: 0,
     HumMargGoodTemp: 0,
     MaxHum: 30,
@@ -65,10 +92,14 @@ export const Bridge = {
     LungPress: makeCollectableValue(),
     makePointAdder,
     Pexhale: 0,
+    PexWarn: false,
     Pinhale: 0,
+    PinWarn: false,
+    O2inLowAlarm: false,
     RoomTemp: 0,
     RR: 0,
     status: "Status: Connecting...",
+    ValveBlockedAlarm: false,
     VT: 0,
     useBridge,
 };

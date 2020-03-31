@@ -32,7 +32,10 @@ async function mutateCollect(name, value, direction, extra) {
         unsureMessage(name, value);
 }
 
-const noCollect = ['Pexhale', 'Pinhale', "RoomTemp", 'RR', 'VT',];
+const noCollect = [
+    'BattLowWarn', 'Hum', 'HumAlarm', 'HumWarn', 'Pexhale', 'PexWarn',
+    'Pinhale', 'PinWarn', 'O2inLowAlarm', "RoomTemp", 'RR', 'ValveBlockedAlarm', 'VT',
+];
 const collect = ["FiO2", "LungPress"];
 
 let tempStorage = {};
@@ -77,6 +80,7 @@ async function reactReceiver(socket, sendToArduino) {
     let savedConfig = JSON.parse(fs.readFileSync(configFileName));
     ['HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum', 'MinTemp',].forEach(name => {
         mutateNoCollect(name, parseFloat(savedConfig[name]), "toReact", socket);
+        mutateNoCollect(name, parseFloat(savedConfig[name]), "toArduino", sendToArduino);
 
         socket.on(name, value => {
             console.log(`[REACT] Received ${name}|${value}`);
@@ -98,9 +102,13 @@ const makeCollectableValue = () => [{
 
 const data = {
     arduinoReceiver,
+    BattLowWarn: 0,
     DesFiO2: 21,
     FiO2: makeCollectableValue(),
     GoodLungTemp: 37,
+    Hum: 0,
+    HumAlarm: 0,
+    HumWarn: 0,
     HumMargBadTemp: 0,
     HumMargGoodTemp: 0,
     MaxHum: 0,
@@ -109,11 +117,15 @@ const data = {
     MinTemp: 0,
     LungPress: makeCollectableValue(),
     Pexhale: 0,
+    PexWarn: 0,
     Pinhale: 0,
+    PinWarn: 0,
     reactReceiver,
+    O2inLowAlarm: 0,
     RoomTemp: 0,
     RR: 0,
     setUpPipe,
+    ValveBlockedAlarm: 0,
     VT: 0,
 };
 

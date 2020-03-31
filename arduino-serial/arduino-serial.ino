@@ -54,35 +54,44 @@ char data[DATA_MAX_SIZE];
 char *settingName = "none";
 char *newValue = "none";
 
+void interpretData()
+{
+    if (settingName == "RoomTemp")
+    {
+        // ...
+    }
+    else if (settingName = "MaxHum")
+    {
+        // ...
+    } // ...
+}
+
 void receiveData()
 {
-   static char endMarker = '\n';
-   char receivedChar;
-   int ndx = 0;
+    static char endMarker = '\n';
+    char receivedChar;
+    int ndx = 0;
 
-   memset(data, 32, sizeof(data));
-   
-   while (Serial.available() > 0)
-   {
-      receivedChar = Serial.read();
-      if (receivedChar == endMarker)
-      {
-         data[ndx] = '\0';
-         settingName = strtok(data, "|");
-         newValue = strtok(NULL, "|");
-         
-         return;
-      }
+    memset(data, 32, sizeof(data));
 
-      data[ndx] = receivedChar;
-      ndx++;
+    while (Serial.available() > 0)
+    {
+        receivedChar = Serial.read();
+        if (receivedChar == endMarker)
+        {
+            data[ndx] = '\0';
+            settingName = strtok(data, "|");
+            newValue = strtok(NULL, "|");
 
-      if (ndx >= DATA_MAX_SIZE)
-        break;
-   }
+            interpretData();
+            receiveData();
+            return;
+        }
 
-   // Data received is invalid
-   settingName = "none";
-   newValue = "none";
-   memset(data, 32, sizeof(data));
+        data[ndx] = receivedChar;
+        ndx++;
+
+        if (ndx >= DATA_MAX_SIZE)
+            break;
+    }
 }

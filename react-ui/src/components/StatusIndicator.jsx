@@ -1,12 +1,19 @@
 import React, { useState } from "react";
 
-import { IconButton, Menu, MenuItem, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Badge, Divider, IconButton, Menu, MenuItem, Typography } from "@material-ui/core";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import NotificationIcon from "@material-ui/icons/Notifications";
 import NotificationImportantIcon from "@material-ui/icons/NotificationImportant";
 
 import Bridge from "../Bridge";
 import { useRefresher } from "../Utilities";
+
+const StyledBadge = withStyles(theme => ({
+    badge: {
+        border: `1px solid ${theme.palette.background.paper}`,
+        backgroundColor: 'red',
+    },
+}))(Badge);
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -25,7 +32,24 @@ const useStyles = makeStyles(theme => ({
         fontSize: 42,
     },
     menuItem: {
-        width: 400,
+        width: 600,
+    },
+    warningIcon: {
+        position: 'relative',
+        color: 'orange',
+        top: 5,
+        left: 0,
+        marginRight: 5,
+    },
+    errorIcon: {
+        position: 'relative',
+        color: 'red',
+        top: 5,
+        left: 0,
+        marginRight: 5,
+    },
+    alarmComponentContainer: {
+        whiteSpace: "normal",
     },
 }));
 
@@ -37,7 +61,10 @@ export default function StatusIndicator() {
     useRefresher(100);
 
     const { alarms, status } = Bridge;
-    const activeAlarms = alarms.filter(alarm => alarm.on);
+    const activeAlarms = Object
+        .entries(alarms)
+        .filter(([name,]) => Bridge[name])
+        .map(([, value]) => value);
 
     return (
         <div className={classes.root}>
@@ -51,7 +78,11 @@ export default function StatusIndicator() {
             >
                 {activeAlarms.length === 0
                     ? <NotificationIcon className={classes.alarmIcon} />
-                    : <NotificationImportantIcon className={classes.alarmIcon} />
+                    : (
+                        <StyledBadge badgeContent={activeAlarms.length} color="error" overlap="circle">
+                            <NotificationImportantIcon className={classes.alarmIcon} />
+                        </StyledBadge>
+                    )
                 }
             </IconButton>
 
@@ -63,7 +94,10 @@ export default function StatusIndicator() {
             >
                 {activeAlarms.length === 0
                     ? <MenuItem className={classes.menuItem}>No alarms or warnings.</MenuItem>
-                    : activeAlarms.map((alarm, i) => <MenuItem key={i} className={classes.menuItem}>{alarm.component}</MenuItem>)
+                    : activeAlarms.map((alarm, i) => <div key={i}>
+                        <MenuItem key={i} className={classes.menuItem}>{alarm.component(classes, Bridge)}</MenuItem>
+                        {i !== activeAlarms.length - 1 && <Divider />}
+                    </div>)
                 }
             </Menu>
         </div>

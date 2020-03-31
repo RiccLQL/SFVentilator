@@ -35,11 +35,10 @@ import Error404Page from "./pages/Error404Page";
 import DebugConsolePage from "./pages/DebugConsolePage";
 import PatientSettingsPage from './pages/PatientSettingsPage';
 
-import Alarm from "./components/Alarm";
+import AlarmDialog from "./components/AlarmDialog";
 
 import HelpScreen from "./help/HelpScreen";
 
-import { log } from './Logging';
 import { useBridge } from "./Bridge";
 
 const drawerWidth = 240;
@@ -121,26 +120,18 @@ const useStyles = makeStyles(theme => ({
 function App() {
 	const classes = useStyles();
 	const theme = useTheme();
-	const [drawerOpen, setDrawerOpen] = useState(false);
-	const [helpOpen, setHelpOpen] = useState(true);
-	const [alarm, setAlarm] = useState({
-		children: <>This value is too high!</>,
-		description: 'FiO2 is too high!',
-		open: false,
-		severity: 'error',
-	});
 
-	const bridge = useBridge(log);
+	const [drawerOpen, setDrawerOpen] = useState(false);
+	const [helpOpen, setHelpOpen] = useState(false);
+
+	const bridge = useBridge();
 
 	return (
 		<Router>
 			<div className={classes.root}>
 				<HelpScreen {...{ helpOpen, setHelpOpen }} />
 				<CssBaseline />
-				<Alarm
-					setOpen={next => setAlarm(alarm => ({ ...alarm, open: next }))}
-					{...alarm}
-				/>
+				<AlarmDialog />
 				<AppBar
 					position="fixed"
 					className={clsx(classes.appBar, {
