@@ -68,7 +68,7 @@ export function useBridge() {
         );
 
         // nonCollect React -> backend
-        ['DesFiO2', 'GoodLungTemp', 'HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum',
+        ['DesFiO2', 'GoodTemp', 'HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum',
             'MinTemp', 'RR', 'Pexhale', 'Pinhale',].forEach(name => Bridge['set' + name] = makeSetter(name, socket));
     }, []);
 };
@@ -79,7 +79,7 @@ export const Bridge = {
     BattLowWarn: false,
     DesFiO2: 21,
     FiO2: makeCollectableValue(),
-    GoodLungTemp: 37,
+    GoodTemp: 37,
     Hum: 0,
     HumAlarm: false,
     HumWarn: false,

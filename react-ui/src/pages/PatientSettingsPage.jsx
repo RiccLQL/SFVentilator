@@ -7,8 +7,8 @@ import Bridge from "../Bridge";
 import { useRefresher } from "../Utilities";
 
 export default function PatientSettingsPage() {
-    const { GoodLungTemp,
-        setGoodLungTemp } = Bridge;
+    const { GoodTemp,
+        setGoodTemp } = Bridge;
 
     useRefresher(100);
 
@@ -25,10 +25,10 @@ export default function PatientSettingsPage() {
                         description="Ideal lung temperature"
                         min={20}
                         max={40}
-                        setter={setGoodLungTemp}
-                        setting="GoodLungTemp"
+                        setter={setGoodTemp}
+                        setting="GoodTemp"
                         unit="degrees Celsius"
-                        value={GoodLungTemp}
+                        value={GoodTemp}
                         width={156}
                     />
                 </ListItem>

@@ -68,7 +68,7 @@ async function setUpPipe(socket) {
 
 async function reactReceiver(socket, sendToArduino) {
     // NON-PERSISTENT/PATIENT-SPECIFIC SETTINGS
-    ['DesFiO2', 'GoodLungTemp', 'RR', 'Pexhale', 'Pinhale'].forEach(
+    ['DesFiO2', 'GoodTemp', 'RR', 'Pexhale', 'Pinhale'].forEach(
         name => socket.on(name, value => {
             console.log(`[REACT] Received ${name}|${value}`);
             mutateNoCollect(name, parseFloat(value), "toArduino", sendToArduino);
@@ -105,7 +105,7 @@ const data = {
     BattLowWarn: 0,
     DesFiO2: 21,
     FiO2: makeCollectableValue(),
-    GoodLungTemp: 37,
+    GoodTemp: 37,
     Hum: 0,
     HumAlarm: 0,
     HumWarn: 0,
