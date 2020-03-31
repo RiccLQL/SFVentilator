@@ -122,7 +122,7 @@ function App() {
 	const classes = useStyles();
 	const theme = useTheme();
 	const [drawerOpen, setDrawerOpen] = useState(false);
-	const [helpOpen, setHelpOpen] = useState(false);
+	const [helpOpen, setHelpOpen] = useState(true);
 	const [alarm, setAlarm] = useState({
 		children: <>This value is too high!</>,
 		description: 'FiO2 is too high!',

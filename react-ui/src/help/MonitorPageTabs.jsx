@@ -56,7 +56,7 @@ function TabPanel(props) {
 }
 
 export default function MonitorPageTabs() {
-    const [value, setValue] = useState(1);
+    const [value, setValue] = useState(0);
     const classes = useStyles();
 
     return <div className={classes.root}>

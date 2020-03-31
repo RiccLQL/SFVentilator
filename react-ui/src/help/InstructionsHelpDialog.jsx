@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function InstructionsHelpDialog({ open, onClose }) {
-    const [activeStep, setActiveStep] = useState(7 - 1);
+    const [activeStep, setActiveStep] = useState(0);
 
     const classes = useStyles();
 
@@ -64,6 +64,7 @@ export default function InstructionsHelpDialog({ open, onClose }) {
                         color="primary"
                         disabled={activeStep === 0}
                         onClick={() => setActiveStep(s => s - 1)}
+                        size="large"
                         variant="outlined"
                     >Back</Button>
                     <Button
@@ -71,6 +72,7 @@ export default function InstructionsHelpDialog({ open, onClose }) {
                         color="primary"
                         disabled={activeStep === stepContent.length - 1}
                         onClick={() => setActiveStep(s => s + 1)}
+                        size="large"
                         variant="outlined"
                     >Next</Button>
                 </div>
@@ -84,6 +86,7 @@ export default function InstructionsHelpDialog({ open, onClose }) {
                     variant="contained"
                     color="primary"
                     onClick={onClose}
+                    size="large"
                 >
                     Close
                 </Button>
