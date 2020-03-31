@@ -109,3 +109,7 @@ export function tsToHMS(ts) {
 
     return `${hours}:${minutes}:${seconds}`;
 };
+
+export function range(n) {
+    return [...Array(n).keys()];
+};

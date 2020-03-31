@@ -19,7 +19,7 @@ function getFormattedDateTime(ts) {
     let minutes = d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes();
     let seconds = d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds();
 
-    return <>{month} {date}, {year} &nbsp;&nbsp;&nbsp; {hours}:{minutes}:{seconds}</>;
+    return <>{month} {date}, {year} &nbsp;&nbsp; {hours}:{minutes}:{seconds}</>;
 }
 
 export default function DateTimeIndicator() {

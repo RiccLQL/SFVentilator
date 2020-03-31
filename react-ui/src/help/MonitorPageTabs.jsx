@@ -71,7 +71,7 @@ export default function MonitorPageTabs() {
             <StyledTab label="DesFiO2" {...a11yProps(1)} />
             <StyledTab label="VT" {...a11yProps(2)} />
             <StyledTab label="RR" {...a11yProps(3)} />
-            <StyledTab label="Pmin and Pmax" {...a11yProps(4)} />
+            <StyledTab label="Pinhale and Pexhale" {...a11yProps(4)} />
         </Tabs>
 
         <TabPanel className={classes.panel} value={value} index={0}>
@@ -102,7 +102,7 @@ export default function MonitorPageTabs() {
         </TabPanel>
         <TabPanel className={classes.panel} value={value} index={4}>
             <Typography variant="body1" component="div">
-                Pmin and Pmax indicate minimum and maximum pressure, respectively.
+                Pinhale and Pexhale are the pressures signifying the end of inhalation and exhalation, respectively.
             </Typography>
             <img src={imgPmin} width={250} alt="Pmin" />
             &nbsp;&nbsp;&nbsp;

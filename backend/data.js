@@ -32,7 +32,7 @@ async function mutateCollect(name, value, direction, extra) {
         unsureMessage(name, value);
 }
 
-const noCollect = ['Pmax', 'Pmin', "RoomTemp", 'RR', 'VT',];
+const noCollect = ['Pexhale', 'Pinhale', "RoomTemp", 'RR', 'VT',];
 const collect = ["FiO2", "LungPress"];
 
 let tempStorage = {};
@@ -65,7 +65,7 @@ async function setUpPipe(socket) {
 
 async function reactReceiver(socket, sendToArduino) {
     // NON-PERSISTENT/PATIENT-SPECIFIC SETTINGS
-    ['DesFiO2', 'GoodLungTemp', 'RR', 'Pmax', 'Pmin'].forEach(
+    ['DesFiO2', 'GoodLungTemp', 'RR', 'Pexhale', 'Pinhale'].forEach(
         name => socket.on(name, value => {
             console.log(`[REACT] Received ${name}|${value}`);
             mutateNoCollect(name, parseFloat(value), "toArduino", sendToArduino);
@@ -73,7 +73,8 @@ async function reactReceiver(socket, sendToArduino) {
     );
 
     // PERSISTENT/GENERAL SETTINGS
-    let savedConfig = JSON.parse(fs.readFileSync('/home/pi/SFVentilator/backend/config.json'));
+    let configFileName = fs.existsSync('./config.json') ? './config.json' : '/home/pi/SFVentilator/backend/config.json';
+    let savedConfig = JSON.parse(fs.readFileSync(configFileName));
     ['HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum', 'MinTemp',].forEach(name => {
         mutateNoCollect(name, parseFloat(savedConfig[name]), "toReact", socket);
 
@@ -81,10 +82,10 @@ async function reactReceiver(socket, sendToArduino) {
             console.log(`[REACT] Received ${name}|${value}`);
             mutateNoCollect(name, parseFloat(value), "toArduino", sendToArduino);
 
-            fs.readFile('./config.json', (_, data) => {
+            fs.readFile(configFileName, (_, data) => {
                 let currentConfig = JSON.parse(data);
                 currentConfig[name] = parseFloat(value);
-                fs.writeFile('./config.json', JSON.stringify(currentConfig), () => { });
+                fs.writeFile(configFileName, JSON.stringify(currentConfig), () => { });
             });
         });
     });
@@ -107,8 +108,8 @@ const data = {
     MinHum: 0,
     MinTemp: 0,
     LungPress: makeCollectableValue(),
-    Pmax: 0,
-    Pmin: 0,
+    Pexhale: 0,
+    Pinhale: 0,
     reactReceiver,
     RoomTemp: 0,
     RR: 0,

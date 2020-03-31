@@ -10,6 +10,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import MonitorPageTabs from './MonitorPageTabs';
 import manualVentilation from './manualVentilation.jpg';
 import wallSocket from './wallSocket.png';
+import imgDesFiO2 from './DesFiO2.png';
 
 export const getStepContent = classes => [
     ['Using this Instructions dialog', <>
@@ -33,16 +34,18 @@ export const getStepContent = classes => [
     </>],
     ['General settings', <>
         To set general settings,
-        press <SettingsIcon className={classes.inlineIcon} /> in the menu on the left to go to Settings.
+        press <SettingsIcon className={classes.inlineIcon} /> in the menu on the left to go to General Settings.
         <br /><br />
         Every setting is represented as a blue button or a textbox.
         To modify the setting, click on the button or textbox.
         An adjustment dialog will open. Use the slider and the buttons in the bottom-left corner to adjust your value.
         Then, press the blue "Set" button.
+        <br />
+        <img src={imgDesFiO2} width={750} alt="DesFiO2" />
     </>],
-    ['Patient profile', <>
+    ['Patient Settings', <>
         To set patient-specific settings,
-        press <PersonIcon className={classes.inlineIcon} /> in the menu on the left to go to Patient Profile.
+        press <PersonIcon className={classes.inlineIcon} /> in the menu on the left to go to Patient Settings.
         <br /><br />
         Every setting is represented as a blue button or a textbox.
         To modify the setting, click on the button or textbox.
@@ -51,14 +54,8 @@ export const getStepContent = classes => [
     </>],
     ['Main monitor page', <>
         On the <ChartIcon className={classes.inlineIcon} /> Monitor page, you can do several things.
+        Click the buttons below on the left to learn about the various settings, values, and charts.
         <MonitorPageTabs />
-    </>],
-    [<>O<sub>2</sub> level and pressure</>, <>
-        To manually control oxygen level and pressure, use the buttons near the LCD screen.
-        <br /><br />
-        [pictures, etc]
-        <br /><br />
-        All changes will be updated and visible on the touch display as well.
     </>],
     ['Alarms and Warnings', <>
 
