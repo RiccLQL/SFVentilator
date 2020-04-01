@@ -150,7 +150,7 @@ function App() {
 						</IconButton>
 						<div className={classes.left}>
 							<Typography className={classes.title} variant="h4" noWrap>
-								Cureona RPi UI
+								SFVentilator UI
           					</Typography>
 							<IconButton
 								className={classes.helpIcon}
