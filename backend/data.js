@@ -34,7 +34,7 @@ async function mutateCollect(name, value, direction, extra) {
 
 const noCollect = [
     'BattLowWarn', 'Hum', 'HumAlarm', 'HumWarn', 'Pexhale', 'PexWarn',
-    'Pinhale', 'PinWarn', 'O2inLowAlarm', "RoomTemp", 'RR', 'ValveBlockedAlarm', 'VT',
+    'Pinhale', 'PinWarn', 'O2inLowAlarm', 'SensorBrokenAlarm', 'VE',
 ];
 const collect = ["FiO2", "LungPress"];
 
@@ -68,7 +68,7 @@ async function setUpPipe(socket) {
 
 async function reactReceiver(socket, sendToArduino) {
     // NON-PERSISTENT/PATIENT-SPECIFIC SETTINGS
-    ['DesFiO2', 'GoodTemp', 'RR', 'Pexhale', 'Pinhale'].forEach(
+    ['BMI', 'DesFiO2', 'RR', 'Pexhale', 'Pinhale', 'PtHt', 'PtWt', 'VT',].forEach(
         name => socket.on(name, value => {
             console.log(`[REACT] Received ${name}|${value}`);
             mutateNoCollect(name, parseFloat(value), "toArduino", sendToArduino);
@@ -78,21 +78,23 @@ async function reactReceiver(socket, sendToArduino) {
     // PERSISTENT/GENERAL SETTINGS
     let configFileName = fs.existsSync('./config.json') ? './config.json' : '/home/pi/SFVentilator/backend/config.json';
     let savedConfig = JSON.parse(fs.readFileSync(configFileName));
-    ['HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MaxTemp', 'MinHum', 'MinTemp',].forEach(name => {
-        mutateNoCollect(name, parseFloat(savedConfig[name]), "toReact", socket);
-        mutateNoCollect(name, parseFloat(savedConfig[name]), "toArduino", sendToArduino);
+    ['BattLevelWarn', 'ChamberThresh', 'GoodTemp', 'HumMargBadTemp', 'HumMargGoodTemp',
+        'MaxHum', 'MinHum', 'O2TankConc', 'O2TankP',
+        'OkErrFiO2', 'OkErrIEP', 'OkErrTemp', 'OkErrVE',].forEach(name => {
+            mutateNoCollect(name, parseFloat(savedConfig[name]), "toReact", socket);
+            mutateNoCollect(name, parseFloat(savedConfig[name]), "toArduino", sendToArduino);
 
-        socket.on(name, value => {
-            console.log(`[REACT] Received ${name}|${value}`);
-            mutateNoCollect(name, parseFloat(value), "toArduino", sendToArduino);
+            socket.on(name, value => {
+                console.log(`[REACT] Received ${name}|${value}`);
+                mutateNoCollect(name, parseFloat(value), "toArduino", sendToArduino);
 
-            fs.readFile(configFileName, (_, data) => {
-                let currentConfig = JSON.parse(data);
-                currentConfig[name] = parseFloat(value);
-                fs.writeFile(configFileName, JSON.stringify(currentConfig), () => { });
+                fs.readFile(configFileName, (_, data) => {
+                    let currentConfig = JSON.parse(data);
+                    currentConfig[name] = parseFloat(value);
+                    fs.writeFile(configFileName, JSON.stringify(currentConfig), () => { });
+                });
             });
         });
-    });
 }
 
 const makeCollectableValue = () => [{
@@ -102,7 +104,10 @@ const makeCollectableValue = () => [{
 
 const data = {
     arduinoReceiver,
+    BattLevelWarn: 0,
     BattLowWarn: 0,
+    BMI: 0,
+    ChamberThresh: 0,
     DesFiO2: 21,
     FiO2: makeCollectableValue(),
     GoodTemp: 37,
@@ -112,21 +117,27 @@ const data = {
     HumMargBadTemp: 0,
     HumMargGoodTemp: 0,
     MaxHum: 0,
-    MaxTemp: 0,
     MinHum: 0,
-    MinTemp: 0,
+    O2TankConc: 0,
+    O2TankP: 14061.4,
+    OkErrFiO2: 0,
+    OkErrIEP: 0,
+    OkErrTemp: 0,
+    OkErrVE: 0,
     LungPress: makeCollectableValue(),
     Pexhale: 0,
     PexWarn: 0,
     Pinhale: 0,
     PinWarn: 0,
+    PtHt: 0,
+    PtWt: 0,
     reactReceiver,
     O2inLowAlarm: 0,
-    RoomTemp: 0,
     RR: 0,
     setUpPipe,
-    ValveBlockedAlarm: 0,
+    SensorBrokenAlarm: 0,
     VT: 0,
+    VE: 0,
 };
 
 module.exports = data;

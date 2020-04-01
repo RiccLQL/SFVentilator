@@ -45,7 +45,7 @@ const alarms = {
             severity: 'error',
         },
     },
-    ValveBlockedAlarm: {
+    SensorBrokenAlarm: {
         component: (classes, Bridge) => <div className={classes.alarmComponentContainer}>
             <WarningIcon className={classes.errorIcon} />
             <Typography variant="h6" component="span">ERROR: Blocked valve</Typography>
@@ -71,7 +71,7 @@ const alarms = {
             <Typography variant="body1" component="div">
                 The battery is low.
                 <br /><br />
-                <b>Recommended action:</b> You need to charge the battery.
+                <b>Recommended action:</b> Either plug it in, swap out the battery, or prepare a different ventilator.
             </Typography>
         </div>,
         dialogData: {

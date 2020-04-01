@@ -1,1 +1,1 @@
-{"HumMargBadTemp":0,"HumMargGoodTemp":30,"MaxHum":34,"MaxTemp":30,"MinHum":20,"MinTemp":26}
+{"GoodTemp":30,"HumMargBadTemp":30,"HumMargGoodTemp":28,"MaxHum":34,"MinHum":28,"OkErrTemp":28,"O2TankConc":26.4,"O2TankP":77,"OkErrFiO2":41.8,"OkErrIEP":55.1,"ChamberThresh":32.7,"OkErrVE":28}

@@ -38,7 +38,6 @@ async function setupArduino(socket) {
     const sendToArduino = (name, value) => console.log(`[ARD] Sending ${name}|${value}`);
 
     data.setUpPipe(socket);
-    data.arduinoReceiver('RoomTemp|29');
     data.reactReceiver(socket, sendToArduino);
 }
 

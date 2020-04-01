@@ -16,8 +16,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MonitorPage() {
     const classes = useStyles();
-    const { DesFiO2, FiO2, LungPress, Pexhale, Pinhale, RoomTemp, RR, setDesFiO2, setRR, setPexhale, setPinhale, VT } = Bridge;
-
+    const { DesFiO2, FiO2, LungPress, Pexhale, Pinhale, RR, setDesFiO2, setRR, setPexhale, setPinhale, VE, VT } = Bridge;
     useRefresher(100);
 
     return (
@@ -26,11 +25,11 @@ export default function MonitorPage() {
                 <Grid item xs={12}>
                     <div style={{ display: 'flex', }}>
                         <DataButton
-                            description="Room temperature"
+                            description="Minute ventilation"
                             decimalPlaces={1}
-                            setting="RoomTemp"
-                            unit="degrees Celsius"
-                            value={RoomTemp}
+                            setting="Min Vent (VE)"
+                            unit="L/min"
+                            value={VE}
                         />
                         <DataButton
                             description={<>Desired FiO<sub>2</sub> (% of O<sub>2</sub> in the air mixture being delivered to patient)</>}

@@ -7,7 +7,12 @@ export const units = {
     seconds: <>s</>,
     "degrees Celsius": <>°C</>,
     mL: <>mL</>,
-    "breaths/minute": <>&nbsp;min<sup>-1</sup></>
+    "breaths/minute": <>&nbsp;min<sup>-1</sup></>,
+    "cmH2O relative to 1atm": <>cmH<sub>2</sub>O relative to 1atm</>,
+    "L/min": <>L/min</>,
+    "kg/m^2": <>kg/m<sup>2</sup></>,
+    kg: <>kg</>,
+    cm: <>cm</>,
 };
 
 export const choice = arr => arr[Math.floor(Math.random() * arr.length)];
