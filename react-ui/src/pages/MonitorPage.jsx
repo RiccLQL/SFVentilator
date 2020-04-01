@@ -16,7 +16,10 @@ const useStyles = makeStyles(theme => ({
 
 export default function MonitorPage() {
     const classes = useStyles();
-    const { DesFiO2, FiO2, LungPress, Pexhale, Pinhale, RR, setDesFiO2, setRR, setPexhale, setPinhale, VE, VT } = Bridge;
+    const { DesFiO2, FiO2, LungPress, Temp, Hum,
+        Pexhale, Pinhale, RR,
+        setDesFiO2, setRR, setPexhale, setPinhale,
+        VE, setVT, VT, } = Bridge;
     useRefresher(100);
 
     return (
@@ -45,6 +48,9 @@ export default function MonitorPage() {
                         <DataButton
                             description={<>Tidal volume</>}
                             decimalPlaces={0}
+                            min={21}
+                            max={100}
+                            setter={setVT}
                             setting="VT"
                             unit="mL"
                             value={VT}
@@ -52,7 +58,7 @@ export default function MonitorPage() {
                         <DataButton
                             description={<>Respiration rate</>}
                             decimalPlaces={0}
-                            min={21}
+                            min={0}
                             max={100}
                             setter={setRR}
                             setting="RR"
@@ -92,21 +98,21 @@ export default function MonitorPage() {
                                 suggestedMin={-100} suggestedMax={100}
                             />
                         </Grid>
-                        <Grid item>
+                        <Grid item xs={3}>
                             <DataButton
-                                description={<>Maximum pressure</>}
-                                decimalPlaces={0}
-                                setting="Pexhale"
-                                unit="cmH2O"
-                                value={Pexhale}
+                                description={<>Current temperature</>}
+                                decimalPlaces={1}
+                                setting="Temperature"
+                                unit="degrees Celsius"
+                                value={Temp}
                             />
                             <div style={{ height: 20 }} />
                             <DataButton
-                                description={<>Maximum pressure</>}
-                                decimalPlaces={0}
-                                setting="Pexhale"
-                                unit="cmH2O"
-                                value={Pexhale}
+                                description={<>Humidity level</>}
+                                decimalPlaces={1}
+                                setting="Humidity"
+                                unit="percentage"
+                                value={Hum}
                             />
                         </Grid>
                     </Grid>

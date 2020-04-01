@@ -23,7 +23,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import ChartIcon from "@material-ui/icons/InsertChartOutlined";
 import SettingsIcon from "@material-ui/icons/Settings";
-import ConsoleIcon from "@material-ui/icons/LaptopChromebookRounded";
 import HelpIcon from "@material-ui/icons/HelpOutlined";
 import PersonIcon from "@material-ui/icons/Person";
 
@@ -32,7 +31,6 @@ import { BrowserRouter as Router, Switch, Route, Link, } from 'react-router-dom'
 import MonitorPage from "./pages/MonitorPage";
 import GeneralSettingsPage from "./pages/GeneralSettingsPage";
 import Error404Page from "./pages/Error404Page";
-import DebugConsolePage from "./pages/DebugConsolePage";
 import PatientSettingsPage from './pages/PatientSettingsPage';
 
 import AlarmDialog from "./components/AlarmDialog";
@@ -122,7 +120,7 @@ function App() {
 	const theme = useTheme();
 
 	const [drawerOpen, setDrawerOpen] = useState(false);
-	const [helpOpen, setHelpOpen] = useState(false);
+	const [helpOpen, setHelpOpen] = useState(true);
 
 	const bridge = useBridge();
 
@@ -203,13 +201,6 @@ function App() {
 								<ListItemText primary="Monitor" />
 							</ListItem>
 						</Link>
-						<Divider />
-						<Link to={'/console'} className={classes.link}>
-							<ListItem button>
-								<ListItemIcon><ConsoleIcon /></ListItemIcon>
-								<ListItemText primary="Debug console" />
-							</ListItem>
-						</Link>
 					</List>
 				</Drawer>
 				<main className={classes.content}>
@@ -222,9 +213,6 @@ function App() {
 						)}
 						<Route exact path='/patient' component={
 							() => <PatientSettingsPage />
-						} />
-						<Route exact path='/console' component={
-							() => <DebugConsolePage />
 						} />
 						<Route exact path='/settings' component={
 							() => <GeneralSettingsPage />

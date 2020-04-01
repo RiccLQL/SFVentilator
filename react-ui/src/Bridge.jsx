@@ -2,7 +2,6 @@ import { useEffect } from "react";
 
 import socketIOClient from "socket.io-client";
 
-import { log } from './Logging';
 import { sortInPlace } from './Utilities';
 import alarms from './alarms';
 
@@ -15,7 +14,6 @@ export function makeSetter(name, socket) {
         let oldStatus = Bridge.status;
         Bridge.status = `Status: Updating setting ${name}...`;
         Bridge[name] = value;
-        log(`Setting ${name} to ${value}`);
         socket.emit(name, value);
         Bridge.status = oldStatus;
     };
@@ -29,19 +27,19 @@ const makeCollectableValue = () => [{
 export function useBridge() {
     useEffect(() => {
         const socket = socketIOClient("http://127.0.0.1:4001");
-        socket.on('connect_error', () => log("Failed to connect to socket.io"));
+        socket.on('connect_error', () => console.log("Failed to connect to socket.io"));
         socket.on('connect', () => {
-            log("Connected to socket.io");
+            console.log("Connected to socket.io");
             Bridge.status = `Status: Connected.`;
         });
         socket.on('disconnect', () => {
-            log("Socket.io disconnected");
+            console.log("Socket.io disconnected");
             Bridge.status = `Status: Connecting...`;
         });
 
         // nonCollect backend -> React
         ['Hum', 'HumMargBadTemp', 'HumMargGoodTemp', 'MaxHum', 'MinHum',
-            'Pexhale', 'Pinhale', 'VE',].forEach(name => socket.on(name, value => Bridge[name] = value));
+            'Pexhale', 'Pinhale', 'VE', 'Temp',].forEach(name => socket.on(name, value => Bridge[name] = value));
 
         // collect backend -> React
         ['FiO2', 'LungPress',].forEach(name => socket.on(name, makePointAdder(200, name)));
@@ -109,6 +107,7 @@ export const Bridge = {
     RR: 0,
     status: "Status: Connecting...",
     SensorBrokenAlarm: false,
+    Temp: 0,
     VE: 0,
     VT: 0,
     useBridge,

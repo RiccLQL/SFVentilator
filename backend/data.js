@@ -34,7 +34,7 @@ async function mutateCollect(name, value, direction, extra) {
 
 const noCollect = [
     'BattLowWarn', 'Hum', 'HumAlarm', 'HumWarn', 'Pexhale', 'PexWarn',
-    'Pinhale', 'PinWarn', 'O2inLowAlarm', 'SensorBrokenAlarm', 'VE',
+    'Pinhale', 'PinWarn', 'O2inLowAlarm', 'SensorBrokenAlarm', 'VE', 'Temp',
 ];
 const collect = ["FiO2", "LungPress"];
 
@@ -136,6 +136,7 @@ const data = {
     RR: 0,
     setUpPipe,
     SensorBrokenAlarm: 0,
+    Temp: 0,
     VT: 0,
     VE: 0,
 };

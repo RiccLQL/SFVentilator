@@ -5,7 +5,6 @@ const path = require('path');
 const socketIo = require('socket.io');
 
 require('./csv').setupCsv();
-const data = require('./data');
 
 if (process.platform === 'win32') {
     const rl = require('readline').createInterface({
@@ -32,7 +31,6 @@ const io = socketIo(server);
 io.on('connection', socket => {
     console.log('[SOCK] New client connected!');
     socket.on('disconnect', () => console.log('[SOCK] Client disconnected!'));
-    require('./synthetic')(socket);
     require('./serial')(socket);
 });
 
